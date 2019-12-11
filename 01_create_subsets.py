@@ -80,17 +80,17 @@ def parse_arguments():
                         default=20171021,
                         help='Random seed used to set the RNG state')
 
-    parser.add_argument('data_dir',
+    parser.add_argument('--data-dir',
                         action='store',
                         type=str,
                         help='Path to directory where data files are stored')
 
-    parser.add_argument('output_dir',
+    parser.add_argument('--output-dir',
                         action='store',
                         type=str,
                         help='Path to directory where output files will be stored')
 
-    parser.add_argument('filename_prefix',
+    parser.add_argument('--filename-prefix',
                         action='store',
                         type=str,
                         help='Path to directory where output files will be stored')
