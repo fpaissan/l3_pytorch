@@ -98,17 +98,17 @@ if __name__ == '__main__':
                         help='Logs verbose info')
 
 
-    parser.add_argument('subset_path',
+    parser.add_argument('--subset-path',
                         action='store',
                         type=str,
                         help='Path to subset file')
 
-    parser.add_argument('num_samples',
+    parser.add_argument('--num-samples',
                         action='store',
                         type=int,
                         help='(Minimum) number of samples to generate')
 
-    parser.add_argument('output_dir',
+    parser.add_argument('--output-dir',
                         action='store',
                         type=str,
                         help='Path to directory where output files will be stored')
