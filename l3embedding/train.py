@@ -401,6 +401,8 @@ def train(train_data_dir, validation_data_dir, output_dir,
     else:
         verbosity = 2
 
+
+    initial_epoch = 0
     if continue_model_dir is not None:
         initial_epoch = last_epoch_idx + 1
     else:

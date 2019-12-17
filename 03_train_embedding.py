@@ -134,17 +134,17 @@ def parse_arguments():
                         default=False,
                         help='Disables logging if flag enabled')
 
-    parser.add_argument('train_data_dir',
+    parser.add_argument('--train-data-dir',
                         action='store',
                         type=str,
                         help='Path to directory where training set files are stored')
 
-    parser.add_argument('validation_data_dir',
+    parser.add_argument('--validation-data-dir',
                         action='store',
                         type=str,
                         help='Path to directory where validation set files are stored')
 
-    parser.add_argument('output_dir',
+    parser.add_argument('--output-dir',
                         action='store',
                         type=str,
                         help='Path to directory where output files will be stored')
