@@ -319,47 +319,47 @@ def train(train_data_dir, validation_data_dir, output_dir,
     best_valid_loss_weight_path = os.path.join(model_dir, 'model_best_valid_loss.h5')
     checkpoint_weight_path = os.path.join(model_dir, 'model_checkpoint.{epoch:02d}.h5')
 
-    # # Load information about last epoch for initializing callbacks and data generators
-    # if continue_model_dir is not None:
-    #     prev_train_hist_path = os.path.join(continue_model_dir, 'history_csvlog.csv')
-    #     last_epoch_idx, last_val_acc, last_val_loss = get_restart_info(prev_train_hist_path)
+    # Load information about last epoch for initializing callbacks and data generators
+    if continue_model_dir is not None:
+        prev_train_hist_path = os.path.join(continue_model_dir, 'history_csvlog.csv')
+        last_epoch_idx, last_val_acc, last_val_loss = get_restart_info(prev_train_hist_path)
 
-    # # Set up callbacks
-    # cb = []
-    # cb.append(keras.callbacks.ModelCheckpoint(latest_weight_path,
-    #                                           save_weights_only=True,
-    #                                           verbose=1))
+    # Set up callbacks
+    cb = []
+    cb.append(keras.callbacks.ModelCheckpoint(latest_weight_path,
+                                              save_weights_only=True,
+                                              verbose=1))
 
-    # best_val_acc_cb = keras.callbacks.ModelCheckpoint(best_valid_acc_weight_path,
-    #                                           save_weights_only=True,
-    #                                           save_best_only=True,
-    #                                           verbose=1,
-    #                                           monitor='val_acc')
-    # if continue_model_dir is not None:
-    #     best_val_acc_cb.best = last_val_acc
-    # cb.append(best_val_acc_cb)
+    best_val_acc_cb = keras.callbacks.ModelCheckpoint(best_valid_acc_weight_path,
+                                              save_weights_only=True,
+                                              save_best_only=True,
+                                              verbose=1,
+                                              monitor='val_acc')
+    if continue_model_dir is not None:
+        best_val_acc_cb.best = last_val_acc
+    cb.append(best_val_acc_cb)
 
-    # best_val_loss_cb = keras.callbacks.ModelCheckpoint(best_valid_loss_weight_path,
-    #                                           save_weights_only=True,
-    #                                           save_best_only=True,
-    #                                           verbose=1,
-    #                                           monitor='val_loss')
-    # if continue_model_dir is not None:
-    #     best_val_loss_cb.best = last_val_loss
-    # cb.append(best_val_loss_cb)
+    best_val_loss_cb = keras.callbacks.ModelCheckpoint(best_valid_loss_weight_path,
+                                              save_weights_only=True,
+                                              save_best_only=True,
+                                              verbose=1,
+                                              monitor='val_loss')
+    if continue_model_dir is not None:
+        best_val_loss_cb.best = last_val_loss
+    cb.append(best_val_loss_cb)
 
-    # checkpoint_cb = keras.callbacks.ModelCheckpoint(checkpoint_weight_path,
-    #                                           save_weights_only=True,
-    #                                           period=checkpoint_interval)
-    # if continue_model_dir is not None:
-    #     checkpoint_cb.epochs_since_last_save = (last_epoch_idx + 1) % checkpoint_interval
-    # cb.append(checkpoint_cb)
+    checkpoint_cb = keras.callbacks.ModelCheckpoint(checkpoint_weight_path,
+                                              save_weights_only=True,
+                                              period=checkpoint_interval)
+    if continue_model_dir is not None:
+        checkpoint_cb.epochs_since_last_save = (last_epoch_idx + 1) % checkpoint_interval
+    cb.append(checkpoint_cb)
 
-    # timer_cb = TimeHistory()
-    # cb.append(timer_cb)
+    timer_cb = TimeHistory()
+    cb.append(timer_cb)
 
-    # history_checkpoint = os.path.join(model_dir, 'history_checkpoint.pkl')
-    # cb.append(LossHistory(history_checkpoint))
+    history_checkpoint = os.path.join(model_dir, 'history_checkpoint.pkl')
+    cb.append(LossHistory(history_checkpoint))
 
     # history_csvlog = os.path.join(model_dir, 'history_csvlog.csv')
     # cb.append(keras.callbacks.CSVLogger(history_csvlog, append=True,
