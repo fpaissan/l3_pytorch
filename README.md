@@ -14,5 +14,11 @@ By running the code with that command, the code is not really optimised (--num-w
 
 ---------------------------------------------------------------
 
+### Command on virgo for 03_train_embedding.py
+
+python3 03_train_embedding.py --train-data-dir /hardmnt/virgo1/data/fpaissan/data/02_out --output-dir /hardmnt/virgo1/data/fpaissan/data/03_out
+
+---------------------------------------------------------------
+
 
 This repo is imported from https://github.com/marl/l3embedding. Refer to that repo for further understanding of work.
