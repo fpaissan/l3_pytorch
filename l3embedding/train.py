@@ -361,42 +361,42 @@ def train(train_data_dir, validation_data_dir, output_dir,
     history_checkpoint = os.path.join(model_dir, 'history_checkpoint.pkl')
     cb.append(LossHistory(history_checkpoint))
 
-    # history_csvlog = os.path.join(model_dir, 'history_csvlog.csv')
-    # cb.append(keras.callbacks.CSVLogger(history_csvlog, append=True,
-    #                                     separator=','))
+    history_csvlog = os.path.join(model_dir, 'history_csvlog.csv')
+    cb.append(keras.callbacks.CSVLogger(history_csvlog, append=True,
+                                        separator=','))
 
-    # if gsheet_id:
-    #     cb.append(GSheetLogger(google_dev_app_name, gsheet_id, param_dict))
+    if gsheet_id:
+        cb.append(GSheetLogger(google_dev_app_name, gsheet_id, param_dict))
 
-    # LOGGER.info('Setting up train data generator...')
-    # if continue_model_dir is not None:
-    #     train_start_batch_idx = train_epoch_size * (last_epoch_idx + 1)
-    # else:
-    #     train_start_batch_idx = None
+    LOGGER.info('Setting up train data generator...')
+    if continue_model_dir is not None:
+        train_start_batch_idx = train_epoch_size * (last_epoch_idx + 1)
+    else:
+        train_start_batch_idx = None
 
-    # train_gen = data_generator(
-    #     train_data_dir,
-    #     batch_size=train_batch_size,
-    #     random_state=random_state,
-    #     start_batch_idx=train_start_batch_idx)
+    train_gen = data_generator(
+        train_data_dir,
+        batch_size=train_batch_size,
+        random_state=random_state,
+        start_batch_idx=train_start_batch_idx)
 
-    # train_gen = pescador.maps.keras_tuples(train_gen,
-    #                                        ['video', 'audio'],
-    #                                        'label')
+    train_gen = pescador.maps.keras_tuples(train_gen,
+                                           ['video', 'audio'],
+                                           'label')
 
-    # LOGGER.info('Setting up validation data generator...')
-    # try:
-    #     val_gen = single_epoch_data_generator(
-    #         validation_data_dir,
-    #         validation_epoch_size,
-    #         batch_size=validation_batch_size,
-    #         random_state=random_state)
+    LOGGER.info('Setting up validation data generator...')
+    try:
+        val_gen = single_epoch_data_generator(
+            validation_data_dir,
+            validation_epoch_size,
+            batch_size=validation_batch_size,
+            random_state=random_state)
 
-    #     val_gen = pescador.maps.keras_tuples(val_gen,
-    #                                         ['video', 'audio'],
-    #                                         'label')
-    # except:
-    #     continue
+        val_gen = pescador.maps.keras_tuples(val_gen,
+                                            ['video', 'audio'],
+                                            'label')
+    except:
+        continue
 
     # # Fit the model
     # LOGGER.info('Fitting model...')
