@@ -152,6 +152,7 @@ def data_generator(data_dir, batch_size=512, random_state=20180123,
         keys = ['audio', 'video', 'label']
 
     for fname in cycle_shuffle(os.listdir(data_dir)):
+        print("[DEBUG]: data_dir = {} , filename = {} .".format(data_dir, fname))
         batch_path = os.path.join(data_dir, fname)
         blob_start_idx = 0
 
@@ -285,139 +286,145 @@ def train(train_data_dir, validation_data_dir, output_dir,
 
     LOGGER.info('Model files can be found in "{}"'.format(model_dir))
 
-    param_dict['model_dir'] = model_dir
-    train_config_path = os.path.join(model_dir, 'config.json')
-    with open(train_config_path, 'w') as fd:
-        json.dump(param_dict, fd, indent=2)
+    # param_dict['model_dir'] = model_dir
+    # train_config_path = os.path.join(model_dir, 'config.json')
+    # with open(train_config_path, 'w') as fd:
+    #     json.dump(param_dict, fd, indent=2)
 
 
-    param_dict.update({
-          'latest_epoch': '-',
-          'latest_train_loss': '-',
-          'latest_validation_loss': '-',
-          'latest_train_acc': '-',
-          'latest_validation_acc': '-',
-          'best_train_loss': '-',
-          'best_validation_loss': '-',
-          'best_train_acc': '-',
-          'best_validation_acc': '-',
-    })
+    # param_dict.update({
+    #       'latest_epoch': '-',
+    #       'latest_train_loss': '-',
+    #       'latest_validation_loss': '-',
+    #       'latest_train_acc': '-',
+    #       'latest_validation_acc': '-',
+    #       'best_train_loss': '-',
+    #       'best_validation_loss': '-',
+    #       'best_train_acc': '-',
+    #       'best_validation_acc': '-',
+    # })
 
-    # Save the model
-    model_spec_path = os.path.join(model_dir, 'model_spec.pkl')
-    model_spec = keras.utils.serialize_keras_object(m)
-    with open(model_spec_path, 'wb') as fd:
-        pickle.dump(model_spec, fd)
-    model_json_path = os.path.join(model_dir, 'model.json')
-    model_json = m.to_json()
-    with open(model_json_path, 'w') as fd:
-        json.dump(model_json, fd, indent=2)
+    # # Save the model
+    # model_spec_path = os.path.join(model_dir, 'model_spec.pkl')
+    # model_spec = keras.utils.serialize_keras_object(m)
+    # with open(model_spec_path, 'wb') as fd:
+    #     pickle.dump(model_spec, fd)
+    # model_json_path = os.path.join(model_dir, 'model.json')
+    # model_json = m.to_json()
+    # with open(model_json_path, 'w') as fd:
+    #     json.dump(model_json, fd, indent=2)
 
-    latest_weight_path = os.path.join(model_dir, 'model_latest.h5')
-    best_valid_acc_weight_path = os.path.join(model_dir, 'model_best_valid_accuracy.h5')
-    best_valid_loss_weight_path = os.path.join(model_dir, 'model_best_valid_loss.h5')
-    checkpoint_weight_path = os.path.join(model_dir, 'model_checkpoint.{epoch:02d}.h5')
+    # latest_weight_path = os.path.join(model_dir, 'model_latest.h5')
+    # best_valid_acc_weight_path = os.path.join(model_dir, 'model_best_valid_accuracy.h5')
+    # best_valid_loss_weight_path = os.path.join(model_dir, 'model_best_valid_loss.h5')
+    # checkpoint_weight_path = os.path.join(model_dir, 'model_checkpoint.{epoch:02d}.h5')
 
-    # Load information about last epoch for initializing callbacks and data generators
-    if continue_model_dir is not None:
-        prev_train_hist_path = os.path.join(continue_model_dir, 'history_csvlog.csv')
-        last_epoch_idx, last_val_acc, last_val_loss = get_restart_info(prev_train_hist_path)
+    # # Load information about last epoch for initializing callbacks and data generators
+    # if continue_model_dir is not None:
+    #     prev_train_hist_path = os.path.join(continue_model_dir, 'history_csvlog.csv')
+    #     last_epoch_idx, last_val_acc, last_val_loss = get_restart_info(prev_train_hist_path)
 
-    # Set up callbacks
-    cb = []
-    cb.append(keras.callbacks.ModelCheckpoint(latest_weight_path,
-                                              save_weights_only=True,
-                                              verbose=1))
+    # # Set up callbacks
+    # cb = []
+    # cb.append(keras.callbacks.ModelCheckpoint(latest_weight_path,
+    #                                           save_weights_only=True,
+    #                                           verbose=1))
 
-    best_val_acc_cb = keras.callbacks.ModelCheckpoint(best_valid_acc_weight_path,
-                                              save_weights_only=True,
-                                              save_best_only=True,
-                                              verbose=1,
-                                              monitor='val_acc')
-    if continue_model_dir is not None:
-        best_val_acc_cb.best = last_val_acc
-    cb.append(best_val_acc_cb)
+    # best_val_acc_cb = keras.callbacks.ModelCheckpoint(best_valid_acc_weight_path,
+    #                                           save_weights_only=True,
+    #                                           save_best_only=True,
+    #                                           verbose=1,
+    #                                           monitor='val_acc')
+    # if continue_model_dir is not None:
+    #     best_val_acc_cb.best = last_val_acc
+    # cb.append(best_val_acc_cb)
 
-    best_val_loss_cb = keras.callbacks.ModelCheckpoint(best_valid_loss_weight_path,
-                                              save_weights_only=True,
-                                              save_best_only=True,
-                                              verbose=1,
-                                              monitor='val_loss')
-    if continue_model_dir is not None:
-        best_val_loss_cb.best = last_val_loss
-    cb.append(best_val_loss_cb)
+    # best_val_loss_cb = keras.callbacks.ModelCheckpoint(best_valid_loss_weight_path,
+    #                                           save_weights_only=True,
+    #                                           save_best_only=True,
+    #                                           verbose=1,
+    #                                           monitor='val_loss')
+    # if continue_model_dir is not None:
+    #     best_val_loss_cb.best = last_val_loss
+    # cb.append(best_val_loss_cb)
 
-    checkpoint_cb = keras.callbacks.ModelCheckpoint(checkpoint_weight_path,
-                                              save_weights_only=True,
-                                              period=checkpoint_interval)
-    if continue_model_dir is not None:
-        checkpoint_cb.epochs_since_last_save = (last_epoch_idx + 1) % checkpoint_interval
-    cb.append(checkpoint_cb)
+    # checkpoint_cb = keras.callbacks.ModelCheckpoint(checkpoint_weight_path,
+    #                                           save_weights_only=True,
+    #                                           period=checkpoint_interval)
+    # if continue_model_dir is not None:
+    #     checkpoint_cb.epochs_since_last_save = (last_epoch_idx + 1) % checkpoint_interval
+    # cb.append(checkpoint_cb)
 
-    timer_cb = TimeHistory()
-    cb.append(timer_cb)
+    # timer_cb = TimeHistory()
+    # cb.append(timer_cb)
 
-    history_checkpoint = os.path.join(model_dir, 'history_checkpoint.pkl')
-    cb.append(LossHistory(history_checkpoint))
+    # history_checkpoint = os.path.join(model_dir, 'history_checkpoint.pkl')
+    # cb.append(LossHistory(history_checkpoint))
 
-    history_csvlog = os.path.join(model_dir, 'history_csvlog.csv')
-    cb.append(keras.callbacks.CSVLogger(history_csvlog, append=True,
-                                        separator=','))
+    # history_csvlog = os.path.join(model_dir, 'history_csvlog.csv')
+    # cb.append(keras.callbacks.CSVLogger(history_csvlog, append=True,
+    #                                     separator=','))
 
-    if gsheet_id:
-        cb.append(GSheetLogger(google_dev_app_name, gsheet_id, param_dict))
+    # if gsheet_id:
+    #     cb.append(GSheetLogger(google_dev_app_name, gsheet_id, param_dict))
 
-    LOGGER.info('Setting up train data generator...')
-    if continue_model_dir is not None:
-        train_start_batch_idx = train_epoch_size * (last_epoch_idx + 1)
-    else:
-        train_start_batch_idx = None
+    # LOGGER.info('Setting up train data generator...')
+    # if continue_model_dir is not None:
+    #     train_start_batch_idx = train_epoch_size * (last_epoch_idx + 1)
+    # else:
+    #     train_start_batch_idx = None
 
-    train_gen = data_generator(
-        train_data_dir,
-        batch_size=train_batch_size,
-        random_state=random_state,
-        start_batch_idx=train_start_batch_idx)
+    # train_gen = data_generator(
+    #     train_data_dir,
+    #     batch_size=train_batch_size,
+    #     random_state=random_state,
+    #     start_batch_idx=train_start_batch_idx)
 
-    train_gen = pescador.maps.keras_tuples(train_gen,
-                                           ['video', 'audio'],
-                                           'label')
+    # train_gen = pescador.maps.keras_tuples(train_gen,
+    #                                        ['video', 'audio'],
+    #                                        'label')
 
-    LOGGER.info('Setting up validation data generator...')
-    val_gen = single_epoch_data_generator(
-        validation_data_dir,
-        validation_epoch_size,
-        batch_size=validation_batch_size,
-        random_state=random_state)
+    # LOGGER.info('Setting up validation data generator...')
+    # try:
+    #     val_gen = single_epoch_data_generator(
+    #         validation_data_dir,
+    #         validation_epoch_size,
+    #         batch_size=validation_batch_size,
+    #         random_state=random_state)
 
-    val_gen = pescador.maps.keras_tuples(val_gen,
-                                         ['video', 'audio'],
-                                         'label')
+    #     val_gen = pescador.maps.keras_tuples(val_gen,
+    #                                         ['video', 'audio'],
+    #                                         'label')
+    # except:
+    #     continue
 
-    # Fit the model
-    LOGGER.info('Fitting model...')
-    if verbose:
-        verbosity = 1
-    else:
-        verbosity = 2
+    # # Fit the model
+    # LOGGER.info('Fitting model...')
+    # if verbose:
+    #     verbosity = 1
+    # else:
+    #     verbosity = 2
 
 
-    initial_epoch = 0
-    if continue_model_dir is not None:
-        initial_epoch = last_epoch_idx + 1
-    else:
-        initial_epoch = 0
-    history = m.fit_generator(train_gen, train_epoch_size, num_epochs,
-                              validation_data=val_gen,
-                              validation_steps=validation_epoch_size,
-                              #use_multiprocessing=True,
-                              callbacks=cb,
-                              verbose=verbosity,
-                              initial_epoch=initial_epoch)
+    # initial_epoch = 0
+    # if continue_model_dir is not None:
+    #     initial_epoch = last_epoch_idx + 1
+    # else:
+    #     initial_epoch = 0
+    
+    # print("[DEBUG]: Initial_epoch = {}".format(initial_epoch))
+    # history = m.fit_generator(train_gen, train_epoch_size, num_epochs,
+    #                           validation_data=val_gen,
+    #                           validation_steps=validation_epoch_size,
+    #                           #use_multiprocessing=True,
+    #                           callbacks=cb,
+    #                           verbose=verbosity,
+    #                           initial_epoch=initial_epoch)
 
-    LOGGER.info('Done training. Saving results to disk...')
-    # Save history
-    with open(os.path.join(model_dir, 'history.pkl'), 'wb') as fd:
-        pickle.dump(history.history, fd)
+    # LOGGER.info('Done training. Saving results to disk...')
 
-    LOGGER.info('Done!')
+    # # Save history
+    # with open(os.path.join(model_dir, 'history.pkl'), 'wb') as fd:
+    #     pickle.dump(history.history, fd)
+
+    # LOGGER.info('Done!')
