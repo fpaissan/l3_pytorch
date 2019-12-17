@@ -292,32 +292,32 @@ def train(train_data_dir, validation_data_dir, output_dir,
     #     json.dump(param_dict, fd, indent=2)
 
 
-    # param_dict.update({
-    #       'latest_epoch': '-',
-    #       'latest_train_loss': '-',
-    #       'latest_validation_loss': '-',
-    #       'latest_train_acc': '-',
-    #       'latest_validation_acc': '-',
-    #       'best_train_loss': '-',
-    #       'best_validation_loss': '-',
-    #       'best_train_acc': '-',
-    #       'best_validation_acc': '-',
-    # })
+    param_dict.update({
+          'latest_epoch': '-',
+          'latest_train_loss': '-',
+          'latest_validation_loss': '-',
+          'latest_train_acc': '-',
+          'latest_validation_acc': '-',
+          'best_train_loss': '-',
+          'best_validation_loss': '-',
+          'best_train_acc': '-',
+          'best_validation_acc': '-',
+    })
 
-    # # Save the model
-    # model_spec_path = os.path.join(model_dir, 'model_spec.pkl')
-    # model_spec = keras.utils.serialize_keras_object(m)
-    # with open(model_spec_path, 'wb') as fd:
-    #     pickle.dump(model_spec, fd)
-    # model_json_path = os.path.join(model_dir, 'model.json')
-    # model_json = m.to_json()
-    # with open(model_json_path, 'w') as fd:
-    #     json.dump(model_json, fd, indent=2)
+    # Save the model
+    model_spec_path = os.path.join(model_dir, 'model_spec.pkl')
+    model_spec = keras.utils.serialize_keras_object(m)
+    with open(model_spec_path, 'wb') as fd:
+        pickle.dump(model_spec, fd)
+    model_json_path = os.path.join(model_dir, 'model.json')
+    model_json = m.to_json()
+    with open(model_json_path, 'w') as fd:
+        json.dump(model_json, fd, indent=2)
 
-    # latest_weight_path = os.path.join(model_dir, 'model_latest.h5')
-    # best_valid_acc_weight_path = os.path.join(model_dir, 'model_best_valid_accuracy.h5')
-    # best_valid_loss_weight_path = os.path.join(model_dir, 'model_best_valid_loss.h5')
-    # checkpoint_weight_path = os.path.join(model_dir, 'model_checkpoint.{epoch:02d}.h5')
+    latest_weight_path = os.path.join(model_dir, 'model_latest.h5')
+    best_valid_acc_weight_path = os.path.join(model_dir, 'model_best_valid_accuracy.h5')
+    best_valid_loss_weight_path = os.path.join(model_dir, 'model_best_valid_loss.h5')
+    checkpoint_weight_path = os.path.join(model_dir, 'model_checkpoint.{epoch:02d}.h5')
 
     # # Load information about last epoch for initializing callbacks and data generators
     # if continue_model_dir is not None:
