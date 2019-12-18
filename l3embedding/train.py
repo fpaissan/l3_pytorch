@@ -385,41 +385,38 @@ def train(train_data_dir, validation_data_dir, output_dir,
                                            'label')
 
     LOGGER.info('Setting up validation data generator...')
-    try:
-        val_gen = single_epoch_data_generator(
-            validation_data_dir,
-            validation_epoch_size,
-            batch_size=validation_batch_size,
-            random_state=random_state)
+    val_gen = single_epoch_data_generator(
+        validation_data_dir,
+        validation_epoch_size,
+        batch_size=validation_batch_size,
+        random_state=random_state)
 
-        val_gen = pescador.maps.keras_tuples(val_gen,
-                                            ['video', 'audio'],
-                                            'label')
-    except:
-        continue
+    val_gen = pescador.maps.keras_tuples(val_gen,
+                                        ['video', 'audio'],
+                                        'label')
 
     # # Fit the model
-    # LOGGER.info('Fitting model...')
-    # if verbose:
-    #     verbosity = 1
-    # else:
-    #     verbosity = 2
+    LOGGER.info('Fitting model...')
+    if verbose:
+        verbosity = 1
+    else:
+        verbosity = 2
 
 
-    # initial_epoch = 0
-    # if continue_model_dir is not None:
-    #     initial_epoch = last_epoch_idx + 1
-    # else:
-    #     initial_epoch = 0
+    initial_epoch = 0
+    if continue_model_dir is not None:
+        initial_epoch = last_epoch_idx + 1
+    else:
+        initial_epoch = 0
     
-    # print("[DEBUG]: Initial_epoch = {}".format(initial_epoch))
-    # history = m.fit_generator(train_gen, train_epoch_size, num_epochs,
-    #                           validation_data=val_gen,
-    #                           validation_steps=validation_epoch_size,
-    #                           #use_multiprocessing=True,
-    #                           callbacks=cb,
-    #                           verbose=verbosity,
-    #                           initial_epoch=initial_epoch)
+    print("[DEBUG]: Initial_epoch = {}".format(initial_epoch))
+    history = m.fit_generator(train_gen, train_epoch_size, num_epochs,
+                              validation_data=val_gen,
+                              validation_steps=validation_epoch_size,
+                              #use_multiprocessing=True,
+                              callbacks=cb,
+                              verbose=verbosity,
+                              initial_epoch=initial_epoch)
 
     # LOGGER.info('Done training. Saving results to disk...')
 
