@@ -127,7 +127,7 @@ class TimeHistory(keras.callbacks.Callback):
 
     def on_batch_end(self, batch, logs=None):
         t = time.time() - self.batch_time_start
-        LOGGER.info('Batch took {} seconds'.format(t))
+        #LOGGER.info('Batch took {} seconds'.format(t))
         self.batch_times.append(t)
 
 
@@ -142,7 +142,7 @@ def cycle_shuffle(iterable, shuffle=True):
 def data_generator(data_dir, batch_size=512, random_state=20180123,
                    start_batch_idx=None, keys=None):
     random.seed(random_state)
-
+    data_dir = "/hardmnt/virgo1/data/fpaissan/data/02_out"
     batch = None
     curr_batch_size = 0
     batch_idx = 0
@@ -151,13 +151,16 @@ def data_generator(data_dir, batch_size=512, random_state=20180123,
     if not keys:
         keys = ['audio', 'video', 'label']
 
-    for fname in cycle_shuffle(os.listdir(data_dir)):
-        print("[DEBUG]: data_dir = {} , filename = {} .".format(data_dir, fname))
+    for num, fname in enumerate(os.listdir(data_dir)):
+        #print("[DEBUG]: data_dir = {} - {} , filename = {} - {}.".format(data_dir, type(data_dir), fname, type(fname)))
         batch_path = os.path.join(data_dir, fname)
+        #print("[DEBUG]: batch_path = {}".format(batch_path))
         blob_start_idx = 0
 
         blob = h5py.File(batch_path, 'r')
         blob_size = len(blob['label'])
+
+        #print("[DEBUG]: blob = {}".format(blob))
 
         while blob_start_idx < blob_size:
             blob_end_idx = min(blob_start_idx + batch_size - curr_batch_size, blob_size)
@@ -190,7 +193,7 @@ def data_generator(data_dir, batch_size=512, random_state=20180123,
                     batch['audio'] = pcm2float(batch['audio'], dtype='float32')
 
                     yield batch
-
+                #print("[DEBUG]: n_file = {}".format((num+1)/len(os.listdir(data_dir))))
                 batch_idx += 1
                 curr_batch_size = 0
                 batch = None
@@ -223,7 +226,7 @@ def train(train_data_dir, validation_data_dir, output_dir,
           learning_rate=1e-4, verbose=False, checkpoint_interval=10,
           log_path=None, disable_logging=False, gpus=1, continue_model_dir=None,
           gsheet_id=None, google_dev_app_name=None):
-
+    train_data_dir = "/hardmnt/virgo1/data/fpaissan/data/02_out"
     init_console_logger(LOGGER, verbose=verbose)
     if not disable_logging:
         init_file_logger(LOGGER, log_path=log_path)
@@ -415,7 +418,7 @@ def train(train_data_dir, validation_data_dir, output_dir,
                               validation_steps=validation_epoch_size,
                               #use_multiprocessing=True,
                               callbacks=cb,
-                              verbose=verbosity,
+                              verbose=1,
                               initial_epoch=initial_epoch)
 
     # LOGGER.info('Done training. Saving results to disk...')

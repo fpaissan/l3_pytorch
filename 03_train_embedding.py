@@ -28,7 +28,7 @@ def parse_arguments():
                         dest='train_epoch_size',
                         action='store',
                         type=int,
-                        default=512,
+                        default=199,
                         help='Number of training batches per epoch')
 
     parser.add_argument('-ves',
@@ -44,7 +44,7 @@ def parse_arguments():
                         dest='train_batch_size',
                         action='store',
                         type=int,
-                        default=64,
+                        default=9,
                         help='Number of examples per training batch')
 
     parser.add_argument('-vbs',
