@@ -151,52 +151,53 @@ def data_generator(data_dir, batch_size=512, random_state=20180123,
     if not keys:
         keys = ['audio', 'video', 'label']
 
-    for num, fname in enumerate(os.listdir(data_dir)):
-        #print("[DEBUG]: data_dir = {} - {} , filename = {} - {}.".format(data_dir, type(data_dir), fname, type(fname)))
-        batch_path = os.path.join(data_dir, fname)
-        #print("[DEBUG]: batch_path = {}".format(batch_path))
-        blob_start_idx = 0
+    while True:
+        for num, fname in enumerate(os.listdir(data_dir)):
+            #print("[DEBUG]: data_dir = {} - {} , filename = {} - {}.".format(data_dir, type(data_dir), fname, type(fname)))
+            batch_path = os.path.join(data_dir, fname)
+            #print("[DEBUG]: batch_path = {}".format(batch_path))
+            blob_start_idx = 0
 
-        blob = h5py.File(batch_path, 'r')
-        blob_size = len(blob['label'])
+            blob = h5py.File(batch_path, 'r')
+            blob_size = len(blob['label'])
 
-        #print("[DEBUG]: blob = {}".format(blob))
+            #print("[DEBUG]: blob = {}".format(blob))
 
-        while blob_start_idx < blob_size:
-            blob_end_idx = min(blob_start_idx + batch_size - curr_batch_size, blob_size)
+            while blob_start_idx < blob_size:
+                blob_end_idx = min(blob_start_idx + batch_size - curr_batch_size, blob_size)
 
-            # If we are starting from a particular batch, skip computing all of
-            # the prior batches
-            if start_batch_idx is None or batch_idx >= start_batch_idx:
-                if batch is None:
-                    batch = {k:blob[k][blob_start_idx:blob_end_idx]
-                             for k in keys}
-                else:
-                    for k in keys:
-                        batch[k] = np.concatenate([batch[k],
-                                                   blob[k][blob_start_idx:blob_end_idx]])
-
-            curr_batch_size += blob_end_idx - blob_start_idx
-            blob_start_idx = blob_end_idx
-
-            if blob_end_idx == blob_size:
-                blob.close()
-
-            if curr_batch_size == batch_size:
-                # If we are starting from a particular batch, skip yielding all
-                # of the prior batches
+                # If we are starting from a particular batch, skip computing all of
+                # the prior batches
                 if start_batch_idx is None or batch_idx >= start_batch_idx:
-                    # Preprocess video so samples are in [-1,1]
-                    batch['video'] = 2 * img_as_float(batch['video']).astype('float32') - 1
+                    if batch is None:
+                        batch = {k:blob[k][blob_start_idx:blob_end_idx]
+                                 for k in keys}
+                    else:
+                        for k in keys:
+                            batch[k] = np.concatenate([batch[k],
+                                                       blob[k][blob_start_idx:blob_end_idx]])
 
-                    # Convert audio to float
-                    batch['audio'] = pcm2float(batch['audio'], dtype='float32')
+                curr_batch_size += blob_end_idx - blob_start_idx
+                blob_start_idx = blob_end_idx
+ 
+                if blob_end_idx == blob_size:
+                    blob.close()
 
-                    yield batch
-                #print("[DEBUG]: n_file = {}".format((num+1)/len(os.listdir(data_dir))))
-                batch_idx += 1
-                curr_batch_size = 0
-                batch = None
+                if curr_batch_size == batch_size:
+                    # If we are starting from a particular batch, skip yielding all
+                    # of the prior batches
+                    if start_batch_idx is None or batch_idx >= start_batch_idx:
+                        # Preprocess video so samples are in [-1,1]
+                        batch['video'] = 2 * img_as_float(batch['video']).astype('float32') - 1
+
+                        # Convert audio to float
+                        batch['audio'] = pcm2float(batch['audio'], dtype='float32')
+
+                        yield batch
+                    #print("[DEBUG]: n_file = {}".format((num+1)/len(os.listdir(data_dir))))
+                    batch_idx += 1
+                    curr_batch_size = 0
+                    batch = None
 
 
 def single_epoch_data_generator(data_dir, epoch_size, **kwargs):
@@ -377,6 +378,8 @@ def train(train_data_dir, validation_data_dir, output_dir,
     else:
         train_start_batch_idx = None
 
+
+    train_batch_size = 8
     train_gen = data_generator(
         train_data_dir,
         batch_size=train_batch_size,
@@ -398,6 +401,8 @@ def train(train_data_dir, validation_data_dir, output_dir,
                                         ['video', 'audio'],
                                         'label')
 
+    val_gen = train_gen
+
     # # Fit the model
     LOGGER.info('Fitting model...')
     if verbose:
@@ -412,14 +417,17 @@ def train(train_data_dir, validation_data_dir, output_dir,
     else:
         initial_epoch = 0
     
-    print("[DEBUG]: Initial_epoch = {}".format(initial_epoch))
+    #print("[DEBUG]: Initial_epoch = {}".format(initial_epoch))
+    print("------------- [DEBUG]: fit_generator params = {}, {}, {}".format(train_epoch_size, num_epochs, validation_epoch_size))
     history = m.fit_generator(train_gen, train_epoch_size, num_epochs,
-                              validation_data=val_gen,
-                              validation_steps=validation_epoch_size,
+                              #validation_data=train_gen,
+                              #validation_steps=train_epoch_size,
+                              #workers = 1,
                               #use_multiprocessing=True,
-                              callbacks=cb,
+                              #callbacks=cb,
                               verbose=1,
-                              initial_epoch=initial_epoch)
+                              #initial_epoch=initial_epoch
+                              )
 
     # LOGGER.info('Done training. Saving results to disk...')
 
