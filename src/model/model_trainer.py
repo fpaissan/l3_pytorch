@@ -1,6 +1,6 @@
 import src.model.vision_model as vision_model
 import src.model.audio_model as audio_model
-from .. import parameters as par
+import model_parameters as par
 
 import torch.optim as optim
 import torch.nn as nn
@@ -31,8 +31,6 @@ if par.MODEL_TYPE == 'default':
 def train(X, y, batch_size=64, lr=1e-4, weigth_decay=1e-5):
     audioNet = audio_model.Net().double()
     visionNet = vision_model.Net().double()
-
     
-
     avcNet = Net(audioNet, visionNet).double()
     print("AVC Net output shape: ", avcNet.forward(X[0], X[1]).shape)

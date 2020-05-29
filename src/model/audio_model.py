@@ -1,4 +1,4 @@
-from .. import parameters as par
+import model_parameters as par
 
 import torch.nn as nn
 import torch
