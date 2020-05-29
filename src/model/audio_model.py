@@ -13,8 +13,8 @@ if par.MODEL_TYPE == 'default':
         def __init__(self):
             super(Net, self).__init__()
             # ToDo: Move on preprocessing
-            #self.Spect = Spectrogram(n_dft=par.AUDIO_n_dft, n_hop=par.AUDIO_n_hop, power_spectrogram=1.0, return_decibel_spectrogram=False, padding='valid')
-            self.L3_Norm = lambda x: torch.log(torch.max(x, 1e-12) / 5.0)
+            # self.Spect = Spectrogram(n_dft=par.AUDIO_n_dft, n_hop=par.AUDIO_n_hop, power_spectrogram=1.0, return_decibel_spectrogram=False, padding='valid')
+            # self.L3_Norm = lambda x: torch.log(torch.max(x, 1e-12) / 5.0)
 
             self.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1)
             self.conv1B = nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1)

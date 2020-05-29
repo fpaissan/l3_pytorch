@@ -21,7 +21,7 @@ if par.MODEL_TYPE == 'default':
             self.soft = nn.Softmax()
 
         def forward(self, audioX, visionX):
-            x = torch.cat((self.visionNet.forward(visionX.double()), self.audioNet.forward(audioX.double())), 0)
+            x = torch.cat((self.audioNet.forward(audioX.double()), self.visionNet.forward(visionX.double())), 0)
             x = self.lin1(x)
             x = self.relu(x)
             x = self.lin2(x)

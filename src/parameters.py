@@ -17,7 +17,8 @@ VIDEO_H = 224
 VIDEO_C = 3
 
 #Merged model parameters
-MERGED_weightdecay = 1e-5
+AVC_weightdecay = 1e-5
+AVC_batchSize = 64
 
 
 
