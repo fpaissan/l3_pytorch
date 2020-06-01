@@ -7,6 +7,13 @@ import pickle
 from tqdm import tqdm
 import os
 
+#GM
+# /scratch/gcerutti/VGGsound/data/Split
+# /scratch/gcerutti/VGGsound/processed
+
+
+
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Moves data from a single folder to train test folder')
     parser.add_argument('--data-dir',
@@ -44,9 +51,9 @@ def extract_features(data_dir, output_dir):
 
         audioBatch.append(spectrogram)
         videoBatch.append(frame)
-        labelBatch.append([i % 2, 1 - (i % 2)])
+        labelBatch.append(np.asarray([i % 2, 1 - (i % 2)]))
 
-        if(i % par.batchSize == 0):
+        if(i % par.batchSize == (par.batchSize - 1)):
             batch = [audioBatch, videoBatch, labelBatch]
             with open(os.path.join(output_dir, 'batch_' + str(int(i / par.batchSize)) + '.pkl'), 'wb') as f:
                 pickle.dump(batch, f)
