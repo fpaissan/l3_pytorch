@@ -1,7 +1,6 @@
 import src.model.model_trainer as model_trainer
-import src.parameters as par # to fix
-from src.model.model_trainer import avcNet
-import src.model.model_parameters as p # to fix
+from src.model.model_trainer import avcNet_generator
+import src.model.model_parameters as p
 import torch.optim as optim
 
 import numpy as np
@@ -34,7 +33,7 @@ if __name__ == "__main__":
   test_dir = os.path.join(args.feat_dir, 'test')
 
   # initialize optimizer
-  model = avcNet() 
+  model = avcNet_generator() 
   optimizer = optim.Adadelta(model.parameters(), lr=p.lr)  
 
   # list with batches

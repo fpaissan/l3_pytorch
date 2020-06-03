@@ -32,7 +32,7 @@ if par.MODEL_TYPE == 'default':
             return self.soft(x)
 
 
-def avcNet():
+def avcNet_generator():
   audioNet = audio_model.Net().double()
   visionNet = vision_model.Net().double()
   avcNet = Net(audioNet, visionNet).double()

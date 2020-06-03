@@ -32,7 +32,7 @@ def get_frame(video_path):
     ret, frame = cap.read()
     
     if(ret):
-        return cv2.resize(frame, (224,224), interpolation = cv2.INTER_AREA) 
+        return cv2.resize(frame, (224,224), interpolation = cv2.INTER_AREA)
     else:
         print("ERROR: -1 in the get frame function")
         return -1

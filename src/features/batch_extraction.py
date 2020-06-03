@@ -7,13 +7,6 @@ import pickle
 from tqdm import tqdm
 import os
 
-#GM
-# /scratch/gcerutti/VGGsound/data/Split
-# /scratch/gcerutti/VGGsound/processed
-
-
-
-
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Moves data from a single folder to train test folder')
     parser.add_argument('--data-dir',
