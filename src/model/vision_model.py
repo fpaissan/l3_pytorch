@@ -80,4 +80,4 @@ if par.MODEL_TYPE == 'default':
 
             x = self.maxpool_4(x)
                         
-            return torch.flatten(x)
+            return torch.flatten(x, 1)

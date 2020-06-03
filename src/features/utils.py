@@ -32,15 +32,16 @@ def get_frame(video_path):
     ret, frame = cap.read()
     
     if(ret):
-        return cv2.resize(frame, (224,224), interpolation = cv2.INTER_AREA)
+        frame = cv2.resize(frame, (224,224), interpolation = cv2.INTER_AREA)
+        return np.moveaxis(frame, -1, 0)/255, 0
     else:
         print("ERROR: -1 in the get frame function")
-        return -1
+        return 0, -1
 
 def get_spectrogram(audio_path):
     audioSignal, _ = sf.read(audio_path, dtype='int16', always_2d=True)
     audioSignal = audioSignal.mean(axis=-1).astype('int16')
 
     spec = stft_magnitude(audioSignal, par.AUDIO_n_dft, par.AUDIO_n_hop, par.AUDIO_n_dft)
-
-    return np.log(np.clip(spec, 1e-12, None) / par.DUMMY_PARAMETER).T
+    spec = np.log(np.clip(spec, 1e-12, None) / par.DUMMY_PARAMETER).T
+    return np.expand_dims(spec, axis=0)

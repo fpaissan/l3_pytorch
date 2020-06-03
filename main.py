@@ -2,6 +2,8 @@ import src.model.model_trainer as model_trainer
 from src.model.model_trainer import avcNet_generator
 import src.model.model_parameters as p
 import torch.optim as optim
+import torch.nn as nn
+from torch.utils.tensorboard import SummaryWriter
 
 import numpy as np
 import torchvision
@@ -9,6 +11,8 @@ import torch
 import os
 import argparse
 import pickle
+
+torch.set_default_tensor_type(torch.FloatTensor)
 
 #Net debugging
 # X = []
@@ -23,6 +27,11 @@ def parse_arguments():
                         action='store',
                         type=str,
                         help='Path to directory where data files are stored')
+    parser.add_argument('--log-dir',
+                        action='store',
+                        type=str,
+                        help='Path to directory where data files are stored',
+                        default = "/scratch/gcerutti/runs/")
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -34,14 +43,24 @@ if __name__ == "__main__":
 
   # initialize optimizer
   model = avcNet_generator() 
-  optimizer = optim.Adadelta(model.parameters(), lr=p.lr)  
+  optimizer = optim.Adam(model.parameters(), lr=p.AVC_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.AVC_weightdecay, amsgrad=False)
+  criterion = nn.CrossEntropyLoss()
+  
+  # initialize summary writer
+  writer = SummaryWriter(args.log_dir)
 
   # list with batches
   train_batches = [os.path.join(train_dir, f) for f in os.listdir(train_dir)]
+  for e in range(p.AVC_epochs):
+    print("INFO: epoch {} of {}".format(e, p.AVC_epochs))
+    loss, acc = list(), list()    
+    for batch in train_batches:
+      with open(batch,"rb") as f:
+        audio, video, label = pickle.load(f)
+      
+      loss_batch, acc_batch = model_trainer.train(audio, video, label, model, optimizer, criterion)
+      loss.append(loss_batch)
+      acc.append(acc_batch)
 
-  for batch in train_batches:
-    with open(batch,"rb") as f:
-      audio, video, label = pickle.load(f)
-    model_trainer.train(audio, video, label, model, optimizer)
-    
-
+    writer.add_scalar('Loss/train', sum(loss)/len(loss), e)
+    writer.add_scalar('Acc/train', sum(acc)/len(acc), e)

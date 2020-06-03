@@ -39,7 +39,9 @@ def extract_features(data_dir, output_dir):
             audio_path = os.path.join(data_dir, 'audio', file_list[rand_i].split('.')[:-1][0] + '.flac')
             video_path = os.path.join(data_dir, 'video', file_list[i].split('.')[:-1][0] + '.mp4')
         
-        frame = get_frame(video_path)
+        frame, check = get_frame(video_path)
+        if check == -1:
+          continue
         spectrogram = get_spectrogram(audio_path)
 
         audioBatch.append(spectrogram)
@@ -47,6 +49,9 @@ def extract_features(data_dir, output_dir):
         labelBatch.append(np.asarray([i % 2, 1 - (i % 2)]))
 
         if(i % par.batchSize == (par.batchSize - 1)):
+            audioBatch, videoBatch, labelBatch = \
+            np.asarray(audioBatch, dtype = np.float32), np.asarray(videoBatch, dtype = np.float32), np.asarray(labelBatch, dtype = np.double) 
+
             batch = [audioBatch, videoBatch, labelBatch]
             with open(os.path.join(output_dir, 'batch_' + str(int(i / par.batchSize)) + '.pkl'), 'wb') as f:
                 pickle.dump(batch, f)
