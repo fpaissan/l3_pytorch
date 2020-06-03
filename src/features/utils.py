@@ -32,12 +32,13 @@ def get_frame(video_path):
     ret, frame = cap.read()
     
     if(ret):
-        return frame
+        return cv2.resize(frame, (224,224), interpolation = cv2.INTER_AREA) 
     else:
+        print("ERROR: -1 in the get frame function")
         return -1
 
 def get_spectrogram(audio_path):
-    audioSignal, sampling_frequency = sf.read(audio_path, dtype='int16', always_2d=True)
+    audioSignal, _ = sf.read(audio_path, dtype='int16', always_2d=True)
     audioSignal = audioSignal.mean(axis=-1).astype('int16')
 
     spec = stft_magnitude(audioSignal, par.AUDIO_n_dft, par.AUDIO_n_hop, par.AUDIO_n_dft)

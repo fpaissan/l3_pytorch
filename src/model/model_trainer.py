@@ -1,12 +1,15 @@
 import src.model.vision_model as vision_model
 import src.model.audio_model as audio_model
-import model_parameters as par
+import src.model.model_parameters as par
+import torch.nn.functional as F
 
 import torch.optim as optim
 import torch.nn as nn
 import numpy as np
 import torchvision
 import torch
+import torch.nn.functional as F
+
 
 if par.MODEL_TYPE == 'default':
     class Net(nn.Module):
@@ -28,9 +31,27 @@ if par.MODEL_TYPE == 'default':
 
             return self.soft(x)
 
-def train(X, y, batch_size=64, lr=1e-4, weigth_decay=1e-5):
-    audioNet = audio_model.Net().double()
-    visionNet = vision_model.Net().double()
-    
-    avcNet = Net(audioNet, visionNet).double()
-    print("AVC Net output shape: ", avcNet.forward(X[0], X[1]).shape)
+
+def avcNet():
+  audioNet = audio_model.Net().double()
+  visionNet = vision_model.Net().double()
+  avcNet = Net(audioNet, visionNet).double()
+  return avcNet
+
+def train(audio, video, y, model, optimizer):
+    model.train()
+    model.cuda()
+
+    audio, video, label = np.asarray(audio, dtype = np.double), np.asarray(video, dtype = np.double), np.asarray(y, dtype = np.double) 
+    video = np.moveaxis(video, -1, 1)
+    audio, video, label = torch.from_numpy(audio), torch.from_numpy(video), torch.from_numpy(label) 
+    audio = audio.unsqueeze(1)
+    audio, video, label = audio.to("cuda"), video.to("cuda"), label.to("cuda")
+
+    optimizer.zero_grad()
+    output = model(audio, video)
+    loss = F.nll_loss(output, label)
+    loss.backward()
+    optimizer.step()
+    print("INFO: loss {:.6f}".format(loss.item()))
+    # print("AVC Net output shape: ", model.forward(X[0], X[1]).shape)

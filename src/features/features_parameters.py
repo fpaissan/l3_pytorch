@@ -19,6 +19,6 @@ AUDIO_n_hop = 242
 
 DUMMY_PARAMETER = 5.0
 
-batchSize = 128 #int(np.floor((GPU_Memory - GPU_Offset) * 1e9 / (VIDEO_C * VIDEO_H * VIDEO_W + AUDIO_C * AUDIO_H * AUDIO_W * 8)))
+batchSize = 10 #int(np.floor((GPU_Memory - GPU_Offset) * 1e9 / (VIDEO_C * VIDEO_H * VIDEO_W + AUDIO_C * AUDIO_H * AUDIO_W * 8)))
 
 print(batchSize)

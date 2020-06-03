@@ -18,4 +18,5 @@ VIDEO_C = 3
 
 #Merged model parameters
 AVC_weightdecay = 1e-5
-AVC_batchSize = (GPU_Memory - GPU_Offset) * 1e9 / (VIDEO_C * VIDEO_H * VIDEO_W + AUDIO_C * AUDIO_H * AUDIO_W * 8)     # Multiplied by 8 because Spectrogram is in double
+lr = 1e-3
+# AVC_batchSize = (GPU_Memory - GPU_Offset) * 1e9 / (VIDEO_C * VIDEO_H * VIDEO_W + AUDIO_C * AUDIO_H * AUDIO_W * 8)     # Multiplied by 8 because Spectrogram is in double
