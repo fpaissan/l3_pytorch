@@ -31,7 +31,7 @@ def parse_arguments():
                         action='store',
                         type=str,
                         help='Path to directory where data files are stored',
-                        default = "/scratch/gcerutti/runs/")
+                        default = "/home/gcerutti/workspace/runs/")
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -61,6 +61,7 @@ if __name__ == "__main__":
       loss_batch, acc_batch = model_trainer.train(audio, video, label, model, optimizer, criterion)
       loss.append(loss_batch)
       acc.append(acc_batch)
-
+    print(sum(acc)/len(acc))
+    print(sum(loss)/len(loss))
     writer.add_scalar('Loss/train', sum(loss)/len(loss), e)
     writer.add_scalar('Acc/train', sum(acc)/len(acc), e)

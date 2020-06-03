@@ -47,8 +47,13 @@ def train(audio, video, label, model, optimizer, criterion):
     optimizer.zero_grad()
     output = model(audio, video)
 
-    loss = criterion(output, torch.max(label, 1)[1])
+    # remove one hot encodind
+    label = torch.max(label, 1)[1]
+
+    loss = criterion(output, label)
     loss.backward()
     optimizer.step()
     
-    return loss.item(), 1 # loss, accuracy 
+    pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+    correct = pred.eq(label.view_as(pred)).sum().item()/pred.shape[0]
+    return loss.item(), correct # loss, accuracy 
