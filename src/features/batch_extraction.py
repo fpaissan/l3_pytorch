@@ -23,6 +23,7 @@ def parse_arguments():
     return parser.parse_args()
 
 def extract_features(data_dir, output_dir):
+
     file_list = os.listdir(os.path.join(data_dir, 'audio'))
     audioBatch = []
     videoBatch = []
@@ -54,7 +55,7 @@ def extract_features(data_dir, output_dir):
             np.asarray(audioBatch, dtype = np.float32), np.asarray(videoBatch, dtype = np.float32), np.asarray(labelBatch, dtype = np.double) 
 
             batch = [audioBatch, videoBatch, labelBatch]
-            with gzip.open(os.path.join(output_dir, 'batch_' + str(int(i / par.batchSize)) + '.pkl'), 'wb') as f:
+            with open(os.path.join(output_dir, 'batch_' + str(int(i / par.batchSize)) + '.pkl'), 'wb') as f:
                 pickle.dump(batch, f)
 
             audioBatch = []

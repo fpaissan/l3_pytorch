@@ -14,7 +14,8 @@ import pickle
 import gzip
 from tqdm import tqdm
 torch.set_default_tensor_type(torch.FloatTensor)
-
+import time
+import os
 #Net debugging
 # X = []
 # X.append(torch.tensor(np.ones(shape=(par.AVC_batchSize, par.AUDIO_C, par.AUDIO_H, par.AUDIO_W))))
@@ -37,7 +38,7 @@ def parse_arguments():
 
 if __name__ == "__main__":
   args = parse_arguments()
-
+  id_log = str(int(time.time()))
   # create train_dir and test_dir variables
   train_dir = os.path.join(args.feat_dir, 'train')
   test_dir = os.path.join(args.feat_dir, 'test')
@@ -48,6 +49,7 @@ if __name__ == "__main__":
   criterion = nn.CrossEntropyLoss()
   
   # initialize summary writer
+  os.system("rm -rd {}".format(args.log_dir))
   writer = SummaryWriter(args.log_dir)
 
   # list with batches
@@ -57,13 +59,12 @@ if __name__ == "__main__":
     print("INFO: epoch {} of {}".format(e, p.AVC_epochs))
     loss, acc = list(), list()    
     for batch in tqdm(train_batches):
-      with gzip.open(batch,"rb") as f:
+      with open(batch,"rb") as f:
         audio, video, label = pickle.load(f)
-      
       loss_batch, acc_batch = model_trainer.train(audio, video, label, model, optimizer, criterion)
       loss.append(loss_batch)
       acc.append(acc_batch)
     print(sum(acc)/len(acc))
     print(sum(loss)/len(loss))
-    writer.add_scalar('Loss/train', sum(loss)/len(loss), e)
-    writer.add_scalar('Acc/train', sum(acc)/len(acc), e)
+    writer.add_scalar('Loss/train_{}'.format(id_log), sum(loss)/len(loss), e)
+    writer.add_scalar('Acc/train_{}'.format(id_log), sum(acc)/len(acc), e)

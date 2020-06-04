@@ -3,6 +3,7 @@ import features_parameters as par
 import soundfile as sf
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
 
 def frame(data, window_length, hop_length):
   num_samples = data.shape[0]

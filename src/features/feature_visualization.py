@@ -7,6 +7,7 @@ import pickle
 from tqdm import tqdm
 import os
 import matplotlib.pyplot as plt
+import gzip
 #GM
 # /scratch/gcerutti/VGGsound/data/Split
 # /scratch/gcerutti/VGGsound/processed
@@ -35,7 +36,7 @@ if __name__ == "__main__":
     
     for i in range(128):
       if label[i][0] == 1:
-        plt.imshow(audio[i])
-        plt.show()
-        plt.imshow(video[i])
-        plt.show()
+        plt.imshow(np.reshape(audio[i], (audio[i].shape[1], audio[i].shape[2])))
+        plt.show()        
+        #plt.imshow(np.moveaxis(video[i], 0, -1)/255)        
+        #plt.show()
