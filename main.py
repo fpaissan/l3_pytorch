@@ -11,7 +11,8 @@ import torch
 import os
 import argparse
 import pickle
-
+import gzip
+from tqdm import tqdm
 torch.set_default_tensor_type(torch.FloatTensor)
 
 #Net debugging
@@ -52,10 +53,11 @@ if __name__ == "__main__":
   # list with batches
   train_batches = [os.path.join(train_dir, f) for f in os.listdir(train_dir)]
   for e in range(p.AVC_epochs):
+    train_batches = [os.path.join(train_dir, f) for f in os.listdir(train_dir)]
     print("INFO: epoch {} of {}".format(e, p.AVC_epochs))
     loss, acc = list(), list()    
-    for batch in train_batches:
-      with open(batch,"rb") as f:
+    for batch in tqdm(train_batches):
+      with gzip.open(batch,"rb") as f:
         audio, video, label = pickle.load(f)
       
       loss_batch, acc_batch = model_trainer.train(audio, video, label, model, optimizer, criterion)
