@@ -54,8 +54,8 @@ if __name__ == "__main__":
 
   # list with batches
   train_batches = [os.path.join(train_dir, f) for f in os.listdir(train_dir)]
+  test_batches = [os.path.join(test_dir, f) for f in os.listdir(test_dir)]
   for e in range(p.AVC_epochs):
-    train_batches = [os.path.join(train_dir, f) for f in os.listdir(train_dir)]
     print("INFO: epoch {} of {}".format(e, p.AVC_epochs))
     loss, acc = list(), list()    
     for batch in tqdm(train_batches):
@@ -64,7 +64,22 @@ if __name__ == "__main__":
       loss_batch, acc_batch = model_trainer.train(audio, video, label, model, optimizer, criterion)
       loss.append(loss_batch)
       acc.append(acc_batch)
-    print(sum(acc)/len(acc))
-    print(sum(loss)/len(loss))
     writer.add_scalar('Loss/train_{}'.format(id_log), sum(loss)/len(loss), e)
     writer.add_scalar('Acc/train_{}'.format(id_log), sum(acc)/len(acc), e)
+    
+    loss, acc = list(), list()    
+    for batch in tqdm(test_batches):
+      with open(batch,"rb") as f:
+        audio, video, label = pickle.load(f)
+      loss_batch, acc_batch = model_trainer.test(audio, video, label, model, criterion)
+      loss.append(loss_batch)
+      acc.append(acc_batch)
+    
+    print(sum(acc)/len(acc))
+    print(sum(loss)/len(loss))
+    writer.add_scalar('Loss/test_{}'.format(id_log), sum(loss)/len(loss), e)
+    writer.add_scalar('Acc/test_{}'.format(id_log), sum(acc)/len(acc), e)
+
+
+
+

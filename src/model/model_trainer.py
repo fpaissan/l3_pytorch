@@ -57,3 +57,21 @@ def train(audio, video, label, model, optimizer, criterion):
     pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
     correct = pred.eq(label.view_as(pred)).sum().item()/pred.shape[0]
     return loss.item(), correct # loss, accuracy 
+
+def test(audio, video, label, model, criterion):
+    model.eval()
+    model.cuda()
+
+    audio, video, label = torch.from_numpy(audio), torch.from_numpy(video), torch.from_numpy(label) 
+    audio, video, label = audio.to("cuda"), video.to("cuda"), label.to("cuda")
+    output = model(audio, video)
+
+    #loss calculation
+    label = torch.max(label, 1)[1]
+    loss = criterion(output, label)
+
+    # remove one hot encodind
+    pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+    correct = pred.eq(label.view_as(pred)).sum().item()/pred.shape[0] # pred.shape[0] batch size
+
+    return loss.item(), correct # loss, accuracy 

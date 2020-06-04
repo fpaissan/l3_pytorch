@@ -22,13 +22,16 @@ def parse_arguments():
 
     return parser.parse_args()
 
-def extract_features(data_dir, output_dir):
+def extract_features(data_dir, output_dir, limit = -1):
 
     file_list = os.listdir(os.path.join(data_dir, 'audio'))
     audioBatch = []
     videoBatch = []
     labelBatch = []
-    for i in tqdm(range(len(file_list))):
+
+    if limit == -1:
+      limit = len(file_list)
+    for i in tqdm(range(len(file_list[:limit]))):
         if(i % 2 == 0): #Save label 1
             audio_path = os.path.join(data_dir, 'audio', file_list[i].split('.')[:-1][0] + '.flac')
             video_path = os.path.join(data_dir, 'video', file_list[i].split('.')[:-1][0] + '.mp4')        
@@ -67,13 +70,12 @@ if __name__ == "__main__":
     args = parse_arguments()
     sub_folders = ['train', 'test']
     
+    os.makedirs(args.output_dir, exist_ok=True)
+    os.makedirs(os.path.join(args.output_dir, 'train'), exist_ok=True)
+    os.makedirs(os.path.join(args.output_dir, 'test'), exist_ok=True)
+
     for s in sub_folders:
         data_dir = os.path.join(args.data_dir, s)
-
         output_dir = os.path.join(args.output_dir, s)
-        os.makedirs(args.output_dir, exist_ok=True)
-        os.makedirs(os.path.join(args.output_dir, 'train'), exist_ok=True)
-        os.makedirs(os.path.join(args.output_dir, 'test'), exist_ok=True)
-
-        extract_features(data_dir, output_dir)
+        extract_features(data_dir, output_dir, limit = par.limit[s])
 

@@ -12,7 +12,7 @@ if par.MODEL_TYPE == 'default':
     class Net(nn.Module):
         def __init__(self):
             super(Net, self).__init__()
-            # ToDo: Move on preprocessing
+            # ToDo: move criterion here
             # self.Spect = Spectrogram(n_dft=par.AUDIO_n_dft, n_hop=par.AUDIO_n_hop, power_spectrogram=1.0, return_decibel_spectrogram=False, padding='valid')
             # self.L3_Norm = lambda x: torch.log(torch.max(x, 1e-12) / 5.0)
 
