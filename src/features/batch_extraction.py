@@ -6,6 +6,7 @@ import random
 import pickle
 from tqdm import tqdm
 import os
+import gzip
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Moves data from a single folder to train test folder')
@@ -53,7 +54,7 @@ def extract_features(data_dir, output_dir):
             np.asarray(audioBatch, dtype = np.float32), np.asarray(videoBatch, dtype = np.float32), np.asarray(labelBatch, dtype = np.double) 
 
             batch = [audioBatch, videoBatch, labelBatch]
-            with open(os.path.join(output_dir, 'batch_' + str(int(i / par.batchSize)) + '.pkl'), 'wb') as f:
+            with gzip.open(os.path.join(output_dir, 'batch_' + str(int(i / par.batchSize)) + '.pkl'), 'wb') as f:
                 pickle.dump(batch, f)
 
             audioBatch = []
@@ -73,6 +74,5 @@ if __name__ == "__main__":
         os.makedirs(os.path.join(args.output_dir, 'train'), exist_ok=True)
         os.makedirs(os.path.join(args.output_dir, 'test'), exist_ok=True)
 
-        
         extract_features(data_dir, output_dir)
 
