@@ -34,6 +34,11 @@ def parse_arguments():
                         type=str,
                         help='Path to directory where data files are stored',
                         default = "/home/gcerutti/workspace/runs/")
+    parser.add_argument('--ckp-dir',
+                        action='store',
+                        type=str,
+                        help='Path to directory where data files are stored',
+                        default = "/scratch/gcerutti/VGGsound/ckp/")
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -42,6 +47,7 @@ if __name__ == "__main__":
   # create train_dir and test_dir variables
   train_dir = os.path.join(args.feat_dir, 'train')
   test_dir = os.path.join(args.feat_dir, 'test')
+  os.makedirs(args.ckp_dir, exist_ok = True)
 
   # initialize optimizer
   model = avcNet_generator() 
@@ -55,6 +61,7 @@ if __name__ == "__main__":
   # list with batches
   train_batches = [os.path.join(train_dir, f) for f in os.listdir(train_dir)]
   test_batches = [os.path.join(test_dir, f) for f in os.listdir(test_dir)]
+  best_loss = np.inf
   for e in range(p.AVC_epochs):
     print("INFO: epoch {} of {}".format(e, p.AVC_epochs))
     loss, acc = list(), list()    
@@ -75,8 +82,11 @@ if __name__ == "__main__":
       loss.append(loss_batch)
       acc.append(acc_batch)
     
-    print(sum(acc)/len(acc))
-    print(sum(loss)/len(loss))
+    test_loss = sum(loss)/len(loss)
+    if test_loss < best_loss:
+      print("INFO: saving checkpoint!")
+      best_loss = test_loss
+      torch.save(model.state_dict(), os.path.join(args.ckp_dir, 'best_val.ckp'))
     writer.add_scalar('Loss/test_{}'.format(id_log), sum(loss)/len(loss), e)
     writer.add_scalar('Acc/test_{}'.format(id_log), sum(acc)/len(acc), e)
 
