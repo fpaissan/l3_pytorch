@@ -49,10 +49,11 @@ if __name__ == "__main__":
   test_dir = os.path.join(args.feat_dir, 'test')
   os.makedirs(args.ckp_dir, exist_ok = True)
 
-  # initialize optimizer
-  model = avcNet_generator() 
+  # initialize optimizer 
   optimizer = optim.Adam(model.parameters(), lr=p.AVC_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.AVC_weightdecay, amsgrad=False)
-  criterion = nn.CrossEntropyLoss()
+  criterion = nn.CrossEntropyLoss()]
+
+  model = avcNet_generator(optimizer, criterion)
   
   # initialize summary writer
   os.system("rm -rd {}".format(args.log_dir))

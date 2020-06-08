@@ -13,8 +13,11 @@ import torch.nn.functional as F
 
 if par.MODEL_TYPE == 'default':
     class Net(nn.Module):
-        def __init__(self, audioNet, visionNet):
+        def __init__(self, audioNet, visionNet, optimizer, criterion):
             super(Net, self).__init__()
+            self.optimizer = optimizer
+            self.criterion = criterion
+
             self.visionNet = visionNet
             self.audioNet = audioNet
             self.lin1 = nn.Linear(1024, 128)
@@ -32,27 +35,27 @@ if par.MODEL_TYPE == 'default':
             return self.soft(x)
 
 
-def avcNet_generator():
+def avcNet_generator(optimizer, criterion):
   audioNet = audio_model.Net()
   visionNet = vision_model.Net()
-  avcNet = Net(audioNet, visionNet)
+  avcNet = Net(audioNet, visionNet, optimizer, criterion)
   return avcNet
 
-def train(audio, video, label, model, optimizer, criterion):
+def train(audio, video, label, model):
     model.train()
     model.cuda()
 
     audio, video, label = torch.from_numpy(audio), torch.from_numpy(video), torch.from_numpy(label) 
     audio, video, label = audio.to("cuda"), video.to("cuda"), label.to("cuda")
-    optimizer.zero_grad()
-    output = model(audio, video)
+    model.optimizer.zero_grad()
+    output = model.forward(audio, video)
 
     # remove one hot encodind
     label = torch.max(label, 1)[1]
 
-    loss = criterion(output, label)
+    loss = model.criterion(output, label)
     loss.backward()
-    optimizer.step()
+    model.optimizer.step()
     
     pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
     correct = pred.eq(label.view_as(pred)).sum().item()/pred.shape[0]

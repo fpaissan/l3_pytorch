@@ -7,21 +7,24 @@ import torch
 Model from R. Arandjelovic et al (2017) - Look, Listen and Learn.
 '''
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(self, optimizer = None, criterion = None):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1)
-        self.conv1B = nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1)
-        self.conv1_bn = nn.BatchNorm2d(64, eps=0.001, momentum=0.99)    #Eps and momentum from keras default
+        self.optimizer = optimizer
+        self.criterion = criterion
 
-        self.conv2 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1)
-        self.conv2B = nn.Conv2d(128, 128, kernel_size=3, stride=1, padding=1)
-        self.conv2_bn = nn.BatchNorm2d(128, eps=0.001, momentum=0.99)    #Eps and momentum from keras default
+        self.conv1 = nn.Conv2d(3, par.VIDEO_channels[0], kernel_size=3, stride=1, padding=1)
+        self.conv1B = nn.Conv2d(par.VIDEO_channels[0], par.VIDEO_channels[0], kernel_size=3, stride=1, padding=1)
+        self.conv1_bn = nn.BatchNorm2d(par.VIDEO_channels[0], eps=0.001, momentum=0.99)    #Eps and momentum from keras default
 
-        self.conv3 = nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1)
-        self.conv3B = nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1)
-        self.conv3_bn = nn.BatchNorm2d(256, eps=0.001, momentum=0.99)    #Eps and momentum from keras default
+        self.conv2 = nn.Conv2d(par.VIDEO_channels[0], par.VIDEO_channels[1], kernel_size=3, stride=1, padding=1)
+        self.conv2B = nn.Conv2d(par.VIDEO_channels[1], par.VIDEO_channels[1], kernel_size=3, stride=1, padding=1)
+        self.conv2_bn = nn.BatchNorm2d(par.VIDEO_channels[1], eps=0.001, momentum=0.99)    #Eps and momentum from keras default
 
-        self.conv4 = nn.Conv2d(256, 512, kernel_size=3, stride=1, padding=1)
+        self.conv3 = nn.Conv2d(par.VIDEO_channels[1], par.VIDEO_channels[2], kernel_size=3, stride=1, padding=1)
+        self.conv3B = nn.Conv2d(par.VIDEO_channels[2], par.VIDEO_channels[2], kernel_size=3, stride=1, padding=1)
+        self.conv3_bn = nn.BatchNorm2d(par.VIDEO_channels[2], eps=0.001, momentum=0.99)    #Eps and momentum from keras default
+
+        self.conv4 = nn.Conv2d(par.VIDEO_channels[2], 512, kernel_size=3, stride=1, padding=1)
         self.conv4B = nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1)
         self.conv4_bn = nn.BatchNorm2d(512, eps=0.001, momentum=0.99)    #Eps and momentum from keras default
         self.maxpool_4 = nn.MaxPool2d(kernel_size=28, stride=None)
