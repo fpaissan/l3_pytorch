@@ -11,7 +11,7 @@ import torch
 import torch.nn.functional as F
 
 class Net(nn.Module):
-    def __init__(self, audioNet, visionNet, optimizer, criterion):
+    def __init__(self, audioNet, visionNet, optimizer = None, criterion = None):
         super(Net, self).__init__()
         self.optimizer = optimizer
         self.criterion = criterion

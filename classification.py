@@ -20,14 +20,11 @@ if __name__ == "__main__":
     args = parse_arguments()
 
     # Load model from checkpoint
-    avcOptimizer = optim.Adam(model.parameters(), lr=p.AVC_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.AVC_weightdecay, amsgrad=False)
-    avcCriterion = nn.CrossEntropyLoss()
-
-    avcModel = avcNet_generator(avcOptimizer, avcCriterion)
+    avcModel = avcNet_generator()
     avcModel.load_state_dict(torch.load(args.trained_model))
 
     # Create classification model
-    classOptimizer = optim.Adam(model.parameters(), lr=p.AVC_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.AVC_weightdecay, amsgrad=False)
+    classOptimizer = optim.Adam(model.parameters(), lr=p.CLASS_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.CLASS_weightdecay, amsgrad=False)
     classCriterion = nn.CrossEntropyLoss()
 
     classModel = classification_trainer.ClassificationNet(avcModel.audioNet, classOptimizer, classCriterion)

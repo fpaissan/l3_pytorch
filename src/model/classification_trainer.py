@@ -10,7 +10,7 @@ import torch
 import torch.nn.functional as F
 
 class ClassificationNet(nn.Module):
-    def __init__(self, audioNet, optimizer, criterion):
+    def __init__(self, audioNet, optimizer = None, criterion = None):
         super(Net, self).__init__()
         self.optimizer = optimizer
         self.criterion = criterion

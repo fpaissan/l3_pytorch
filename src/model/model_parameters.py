@@ -1,7 +1,6 @@
 import numpy as np
 
 MODEL_TYPE = 'default'
-NUM_CLASSES = {'esc50': 5}
 
 #Audio model parameters
 AUDIO_weightdecay = 1e-5
@@ -29,3 +28,8 @@ AVC_lr = 1e-4
 AVC_epochs = 1000
 # AVC_batchSize = (GPU_Memory - GPU_Offset) * 1e9 / (VIDEO_C * VIDEO_H * VIDEO_W + AUDIO_C * AUDIO_H * AUDIO_W * 8)
 # # Multiplied by 8 because Spectrogram is in double
+
+#Classification parameters
+NUM_CLASSES = {'esc50': 5}
+CLASS_lr = 1e-4
+CLASS_weigthdecay = 0

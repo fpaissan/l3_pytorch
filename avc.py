@@ -50,10 +50,10 @@ if __name__ == "__main__":
   os.makedirs(args.ckp_dir, exist_ok = True)
 
   # initialize optimizer 
-  optimizer = optim.Adam(model.parameters(), lr=p.AVC_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.AVC_weightdecay, amsgrad=False)
-  criterion = nn.CrossEntropyLoss()]
+  model = avcNet_generator()
 
-  model = avcNet_generator(optimizer, criterion)
+  model.optimizer = optim.Adam(model.parameters(), lr=p.AVC_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.AVC_weightdecay, amsgrad=False)
+  model.criterion = nn.CrossEntropyLoss()
   
   # initialize summary writer
   os.system("rm -rd {}".format(args.log_dir))
