@@ -36,12 +36,24 @@ def get_frame(video_path):
         frame = cv2.resize(frame, (224,224), interpolation = cv2.INTER_AREA)
         return np.moveaxis(frame, -1, 0)/255, 0
     else:
-        print("ERROR: -1 in the get frame function")
+        print("ERROR: -1 in the get frame function, file {}".format(video_path))
         return 0, -1
 
 def get_spectrogram(audio_path):
-    audioSignal, _ = sf.read(audio_path, dtype='int16', always_2d=True)
+    audioSignal, sr = sf.read(audio_path, dtype='int16', always_2d=True)
     audioSignal = audioSignal.mean(axis=-1).astype('int16')
+    if sr != 48000:
+      print("ERROR: file {} has a sampling rate of {}".format(audio_path, sr))    
+    to_pad = int(1 * sr - audioSignal.shape[0])
+    if to_pad <= 0:
+      to_remove = int(to_pad * -1)
+      audioSignal = audioSignal[to_remove:]
+    if to_pad > 0:
+      if len(audioSignal.shape) > 1:
+        padding_array = np.zeros((to_pad, audioSignal.shape[1]), dtype='int16')      
+      else:
+        padding_array = np.zeros((to_pad,), dtype='int16')      
+      audioSignal = np.concatenate( (padding_array,audioSignal) )
 
     spec = stft_magnitude(audioSignal, par.AUDIO_n_dft, par.AUDIO_n_hop, par.AUDIO_n_dft)
     spec = np.log(np.clip(spec, 1e-12, None) / par.DUMMY_PARAMETER).T
