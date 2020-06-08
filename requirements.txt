@@ -1,3 +1,6 @@
 torch
 torchvision
 soundfile
+tensorboard==1.14.0
+opencv-python
+matplotlib
