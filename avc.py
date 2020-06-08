@@ -1,5 +1,5 @@
-import src.model.model_trainer as model_trainer
-from src.model.model_trainer import avcNet_generator
+import src.model.avc_trainer as model_trainer
+from src.model.avc_trainer import avcNet_generator
 import src.model.model_parameters as p
 import torch.optim as optim
 import torch.nn as nn

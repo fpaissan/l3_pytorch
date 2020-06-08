@@ -10,29 +10,27 @@ import torchvision
 import torch
 import torch.nn.functional as F
 
+class Net(nn.Module):
+    def __init__(self, audioNet, visionNet, optimizer, criterion):
+        super(Net, self).__init__()
+        self.optimizer = optimizer
+        self.criterion = criterion
 
-if par.MODEL_TYPE == 'default':
-    class Net(nn.Module):
-        def __init__(self, audioNet, visionNet, optimizer, criterion):
-            super(Net, self).__init__()
-            self.optimizer = optimizer
-            self.criterion = criterion
+        self.visionNet = visionNet
+        self.audioNet = audioNet
+        self.lin1 = nn.Linear(1024, 128)
+        self.lin2 = nn.Linear(128, 2)
 
-            self.visionNet = visionNet
-            self.audioNet = audioNet
-            self.lin1 = nn.Linear(1024, 128)
-            self.lin2 = nn.Linear(128, 2)
+        self.relu = nn.ReLU()
+        self.soft = nn.Softmax()
 
-            self.relu = nn.ReLU()
-            self.soft = nn.Softmax()
+    def forward(self, audioX, visionX):
+        x = torch.cat((self.audioNet.forward(audioX.float()), self.visionNet.forward(visionX.float())), 1)
+        x = self.lin1(x)
+        x = self.relu(x)
+        x = self.lin2(x)
 
-        def forward(self, audioX, visionX):
-            x = torch.cat((self.audioNet.forward(audioX.float()), self.visionNet.forward(visionX.float())), 1)
-            x = self.lin1(x)
-            x = self.relu(x)
-            x = self.lin2(x)
-
-            return self.soft(x)
+        return self.soft(x)
 
 
 def avcNet_generator(optimizer, criterion):

@@ -1,6 +1,7 @@
 import numpy as np
 
 MODEL_TYPE = 'default'
+NUM_CLASSES = {'esc50': 5}
 
 #Audio model parameters
 AUDIO_weightdecay = 1e-5
