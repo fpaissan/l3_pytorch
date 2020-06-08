@@ -21,11 +21,10 @@ if __name__ == "__main__":
 
     # Load model from checkpoint
     avcModel = avcNet_generator()
-    avcModel.load_state_dict(torch.load(args.trained_model))
+    avcModel.load_state_dict(torch.load(args.trained_model, map_location=torch.device('cpu')))
 
     # Create classification model
-    classOptimizer = optim.Adam(model.parameters(), lr=p.CLASS_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.CLASS_weightdecay, amsgrad=False)
-    classCriterion = nn.CrossEntropyLoss()
+    classModel = classification_trainer.ClassificationNet(avcModel.audioNet)
 
-    classModel = classification_trainer.ClassificationNet(avcModel.audioNet, classOptimizer, classCriterion)
-
+    classModel.classOptimizer = optim.Adam(classModel.parameters(), lr=p.CLASS_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.CLASS_weightdecay, amsgrad=False)
+    classModel.classCriterion = nn.CrossEntropyLoss()

@@ -33,7 +33,7 @@ class Net(nn.Module):
         return self.soft(x)
 
 
-def avcNet_generator(optimizer, criterion):
+def avcNet_generator(optimizer = None, criterion = None):
   audioNet = audio_model.Net()
   visionNet = vision_model.Net()
   avcNet = Net(audioNet, visionNet, optimizer, criterion)

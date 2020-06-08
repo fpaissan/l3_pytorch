@@ -32,4 +32,4 @@ AVC_epochs = 1000
 #Classification parameters
 NUM_CLASSES = {'esc50': 5}
 CLASS_lr = 1e-4
-CLASS_weigthdecay = 0
+CLASS_weightdecay = 0
