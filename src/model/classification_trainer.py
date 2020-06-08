@@ -16,6 +16,11 @@ class ClassificationNet(nn.Module):
         self.criterion = criterion
 
         self.audioNet = audioNet
+        
+        # Disables fine-tuning
+        for param in self.audioNet.parameters():
+            param.requires_grad = False
+
         self.lin0 = nn.Linear(512, 512)
         self.lin1 = nn.Linear(512, 128)
         self.lin2 = nn.Linear(128, par.NUM_CLASSES['esc50'])
@@ -33,3 +38,40 @@ class ClassificationNet(nn.Module):
         x = self.lin2(x)
 
         return self.soft(x)
+
+def train(audio, label, model):
+    model.train()
+    model.cuda()
+
+    audio, label = torch.from_numpy(audio), torch.from_numpy(label) 
+    audio, label = audio.to("cuda"), label.to("cuda")
+    model.optimizer.zero_grad()
+    output = model.forward(audio)
+
+    # remove one hot encodind
+    label = torch.max(label, 1)[1]
+
+    loss = model.criterion(output, label)
+    loss.backward()
+    model.optimizer.step()
+    
+    pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+    correct = pred.eq(label.view_as(pred)).sum().item()/pred.shape[0]
+    return loss.item(), correct # loss, accuracy 
+
+def test(audio, label, model, criterion):
+    model.eval() # chech with batch normalization
+    model.cuda()
+    audio, label = torch.from_numpy(audio), torch.from_numpy(label) 
+    audio, label = audio.to("cuda"), label.to("cuda")
+    output = model.forward(audio)
+
+    #loss calculation
+    label = torch.max(label, 1)[1]
+    loss = criterion(output, label)
+
+    # remove one hot encodind
+    pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+    correct = pred.eq(label.view_as(pred)).sum().item()/pred.shape[0] # pred.shape[0] batch size
+
+    return loss.item(), correct # loss, accuracy 

@@ -30,6 +30,6 @@ AVC_epochs = 1000
 # # Multiplied by 8 because Spectrogram is in double
 
 #Classification parameters
-NUM_CLASSES = {'esc50': 5}
+NUM_CLASSES = {'esc50': 50}
 CLASS_lr = 1e-4
 CLASS_weightdecay = 0
