@@ -40,7 +40,7 @@ def get_frame(video_path):
 
 def get_spectrogram(audioSignal, sr):
     if sr != 48000:
-      print("ERROR: file {} has a sampling rate of {}".format(audio_path, sr))    
+      print("ERROR: sampling rate is not 48kHz")    
     to_pad = int(1 * sr - audioSignal.shape[0])
     if to_pad <= 0:
       to_remove = int(to_pad * -1)

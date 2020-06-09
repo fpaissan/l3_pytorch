@@ -3,6 +3,7 @@ from utils import *
 
 from tqdm import tqdm
 import argparse
+import resampy
 import librosa
 import random
 import pickle
@@ -24,7 +25,7 @@ def parse_arguments():
     return parser.parse_args()
 
 def audio_feat(audio, sr):
-    hop_length = int(par.ESC50_hopsize * sr)
+    hop_length = int(par.ESC_hopsize * sr)
     frame_length = sr
 
     x = librosa.util.utils.frame(audio, frame_length=frame_length, hop_length=hop_length).T # Audio frames
@@ -44,19 +45,22 @@ def extract_features(data_dir, output_dir, limit = -1):
     if limit == -1:
       limit = len(file_list)
     for i in tqdm(range(len(file_list))):
-        audio_path = os.path.join(data_dir, 'audio', file_list[i] + '.wav')
+        audio_path = os.path.join(data_dir, file_list[i])
 
         audioSignal, sr = sf.read(audio_path, dtype='int16', always_2d=True)
         audioSignal = audioSignal.mean(axis=-1).astype('int16')
-
-        spectrograms = audio_feat(audioSignal, sr)
+        audioSignal = resampy.resample(audioSignal, sr, 48000)
+        
+        spectrograms = audio_feat(audioSignal, 48000)
 
         audioBatch.append(spectrograms)
+        
+        basename = file_list[i].split('.')[-1]        
 
-        class_label = int(file_list[i].split('-')[-1])
+        class_label = int(basename.split('-')[-1])
         labelBatch.append(class_label)
 
-        if(i % par.ESC50_batchSize == (par.ESC50_batchSize - 1)):
+        if(i % par.ESC_batchsize == (par.ESC_batchsize - 1)):
             try:
               audioBatch, labelBatch = np.asarray(audioBatch, dtype = np.float32), np.asarray(labelBatch, dtype = np.double)
 
@@ -66,16 +70,14 @@ def extract_features(data_dir, output_dir, limit = -1):
               [print(audioBatch[i].shape) for i in range(len(audioBatch))]
               input(audio_path)
               audioBatch = []
-              videoBatch = []
               labelBatch = []  
               continue
 
-            batch = [audioBatch, videoBatch, labelBatch]
+            batch = [audioBatch, labelBatch]
             with open(os.path.join(output_dir, 'batch_' + str(int(i / par.batchSize)) + '.pkl'), 'wb') as f:
                 pickle.dump(batch, f)
 
             audioBatch = []
-            videoBatch = []
             labelBatch = []
 
 
@@ -83,5 +85,5 @@ if __name__ == "__main__":
     args = parse_arguments()
     os.makedirs(args.output_dir, exist_ok=True)
 
-    extract_features(args.data_dir, args.output_dir, limit = par.limit[s])
+    extract_features(args.data_dir, args.output_dir, limit = par.ESC_limit)
 
