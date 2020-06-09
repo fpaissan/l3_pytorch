@@ -21,7 +21,7 @@ class ClassificationNet(nn.Module):
         for param in self.audioNet.parameters():
             param.requires_grad = False
 
-        self.lin0 = nn.Linear(512, 512)
+        # self.lin0 = nn.Linear(512, 512)
         self.lin1 = nn.Linear(512, 128)
         self.lin2 = nn.Linear(128, par.NUM_CLASSES['esc50'])
 
@@ -31,8 +31,8 @@ class ClassificationNet(nn.Module):
     def forward(self, audioX):
         x = self.audioNet.forward(audioX)
 
-        x = self.lin0(x)
-        x = self.relu(x)
+        # x = self.lin0(x)
+        # x = self.relu(x)
         x = self.lin1(x)
         x = self.relu(x)
         x = self.lin2(x)
@@ -46,7 +46,6 @@ def train(audio, label, model):
     audio, label = torch.from_numpy(audio), torch.from_numpy(label.astype(np.long))
     audio, label = audio.to("cuda"), label.to("cuda")
     model.optimizer.zero_grad()
-
     # (bs, 41, 1, 257, 196)
     pred = np.ndarray(shape=(len(label), par.NUM_CLASSES['esc50']))
     pred = torch.from_numpy(np.asarray(pred, dtype = np.float32))

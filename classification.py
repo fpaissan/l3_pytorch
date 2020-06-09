@@ -45,11 +45,11 @@ if __name__ == "__main__":
 
     # Load model from checkpoint
     avcModel = avcNet_generator()
-    avcModel.load_state_dict(torch.load(args.trained_model, map_location=torch.device('cpu')))
+    avcModel.load_state_dict(torch.load(args.trained_model))
 
     # Create classification model
     classModel = model_trainer.ClassificationNet(avcModel.audioNet)
-
+    print(classModel)
     classModel.optimizer = optim.Adam(classModel.parameters(), lr=p.CLASS_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.CLASS_weightdecay, amsgrad=False)
     classModel.criterion = nn.CrossEntropyLoss()
 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
         best_loss = np.inf
         for e in range(p.AVC_epochs):
-            print("INFO: epoch {} of {}".format(e, p.CLASS_epochs))
+            print("INFO: epoch {} of {}".format(e + 1, p.CLASS_epochs))
             loss, acc = list(), list()    
             for batch in tqdm(train_batches):
                 with open(batch, "rb") as f:

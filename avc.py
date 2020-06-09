@@ -64,7 +64,7 @@ if __name__ == "__main__":
   test_batches = [os.path.join(test_dir, f) for f in os.listdir(test_dir)]
   best_loss = np.inf
   for e in range(p.AVC_epochs):
-    print("INFO: epoch {} of {}".format(e, p.AVC_epochs))
+    print("INFO: epoch {} of {}".format(e + 1, p.AVC_epochs))
     loss, acc = list(), list()    
     for batch in tqdm(train_batches):
       with open(batch,"rb") as f:
