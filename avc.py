@@ -79,7 +79,7 @@ if __name__ == "__main__":
     for batch in tqdm(test_batches):
       with open(batch,"rb") as f:
         audio, video, label = pickle.load(f)
-      loss_batch, acc_batch = model_trainer.test(audio, video, label, model, criterion)
+      loss_batch, acc_batch = model_trainer.test(audio, video, label, model)
       loss.append(loss_batch)
       acc.append(acc_batch)
     

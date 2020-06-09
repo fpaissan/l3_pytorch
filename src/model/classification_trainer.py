@@ -46,16 +46,22 @@ def train(audio, label, model):
     audio, label = torch.from_numpy(audio), torch.from_numpy(label) 
     audio, label = audio.to("cuda"), label.to("cuda")
     model.optimizer.zero_grad()
-    output = model.forward(audio)
 
-    # remove one hot encodind
-    label = torch.max(label, 1)[1]
+    # (bs, 41, 1, 257, 196)
+    pred = list()
+    for i in range(audio.shape[0]):
+        sample_out = model.forward(audio[i])
+        sample_out = torch.sum(sample_out, dim=0)
+        pred.append(torch.max(sample_out, 1)[1])
 
-    loss = model.criterion(output, label)
+    pred = torch.from_numpy(np.asarray(pred))
+    pred = pred.to("cuda")
+
+    loss = model.criterion(pred, label)
     loss.backward()
     model.optimizer.step()
     
-    pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+    pred = pred.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
     correct = pred.eq(label.view_as(pred)).sum().item()/pred.shape[0]
     return loss.item(), correct # loss, accuracy 
 

@@ -33,3 +33,4 @@ AVC_epochs = 1000
 NUM_CLASSES = {'esc50': 50}
 CLASS_lr = 1e-4
 CLASS_weightdecay = 0
+CLASS_epochs = 1000
