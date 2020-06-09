@@ -55,35 +55,43 @@ def extract_features(data_dir, output_dir, limit = -1):
 
         audioBatch.append(spectrograms)
         
-        basename = file_list[i].split('.')[-1]        
+        basename = file_list[i].split('.')[0]  
 
         class_label = int(basename.split('-')[-1])
         labelBatch.append(class_label)
 
         if(i % par.ESC_batchsize == (par.ESC_batchsize - 1)):
             try:
-              audioBatch, labelBatch = np.asarray(audioBatch, dtype = np.float32), np.asarray(labelBatch, dtype = np.double)
+                audioBatch, labelBatch = np.asarray(audioBatch, dtype = np.float32), np.asarray(labelBatch, dtype = np.double)
 
             except Exception as e:
-              print(e)
-              print(len(audioBatch))
-              [print(audioBatch[i].shape) for i in range(len(audioBatch))]
-              input(audio_path)
-              audioBatch = []
-              labelBatch = []  
-              continue
+                print(e)
+                audioBatch = []
+                labelBatch = []  
+                continue
 
             batch = [audioBatch, labelBatch]
-            with open(os.path.join(output_dir, 'batch_' + str(int(i / par.batchSize)) + '.pkl'), 'wb') as f:
+            with open(os.path.join(output_dir, 'fold' + basename.split('-')[0], 'batch_' + str(int(i / par.batchSize)) + '.pkl'), 'wb') as f:
                 pickle.dump(batch, f)
 
             audioBatch = []
             labelBatch = []
 
+    try:
+        audioBatch, labelBatch = np.asarray(audioBatch, dtype = np.float32), np.asarray(labelBatch, dtype = np.double)
+
+    except Exception as e:
+        print(e)
+
+    batch = [audioBatch, labelBatch]
+    with open(os.path.join(output_dir, 'fold' + basename.split('-')[0], 'batch_' + str(int(i / par.batchSize)) + '.pkl'), 'wb') as f:
+        pickle.dump(batch, f)
 
 if __name__ == "__main__":
     args = parse_arguments()
-    os.makedirs(args.output_dir, exist_ok=True)
+    
+    for i in range(5):
+        os.makedirs(os.path.join(args.output_dir, 'fold' + str(i)), exist_ok=True)
 
     extract_features(args.data_dir, args.output_dir, limit = par.ESC_limit)
 
