@@ -29,9 +29,10 @@ def audio_feat(audio, sr):
     frame_length = sr
 
     x = librosa.util.utils.frame(audio, frame_length=frame_length, hop_length=hop_length).T # Audio frames
+    
     specs = list()
     for frame in x:
-        specs.append(get_spectrogram(frame, sr))
+        specs.append(get_spectrogram(frame, sr, axis = 1))
 
     return np.asarray(specs, np.double) # Maybe add a dimension
 
@@ -52,10 +53,10 @@ def extract_features(data_dir, output_dir, limit = -1):
         audioSignal = resampy.resample(audioSignal, sr, 48000)
         
         spectrograms = audio_feat(audioSignal, 48000)
-
+        
         audioBatch.append(spectrograms)
         
-        basename = file_list[i].split('.')[0]  
+        basename = file_list[i].split('.')[0]    # Actually not the exact fold division  
 
         class_label = int(basename.split('-')[-1])
         labelBatch.append(class_label)
@@ -90,7 +91,7 @@ def extract_features(data_dir, output_dir, limit = -1):
 if __name__ == "__main__":
     args = parse_arguments()
     
-    for i in range(5):
+    for i in range(1, 6):
         os.makedirs(os.path.join(args.output_dir, 'fold' + str(i)), exist_ok=True)
 
     extract_features(args.data_dir, args.output_dir, limit = par.ESC_limit)
