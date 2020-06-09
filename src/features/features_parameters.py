@@ -23,3 +23,8 @@ batchSize = 2 #int(np.floor((GPU_Memory - GPU_Offset) * 1e9 / (VIDEO_C * VIDEO_H
 
 limit = {'train': -1,
          'test': -1}
+
+
+# ESC-50 related
+ESC_batchsize = 16
+ESC_hopsize = 0.1

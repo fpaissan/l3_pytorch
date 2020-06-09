@@ -29,7 +29,6 @@ def stft_magnitude(signal, fft_length,
 
 def get_frame(video_path):
     cap = cv2.VideoCapture(video_path)
- 
     ret, frame = cap.read()
     
     if(ret):
@@ -39,9 +38,7 @@ def get_frame(video_path):
         print("ERROR: -1 in the get frame function, file {}".format(video_path))
         return 0, -1
 
-def get_spectrogram(audio_path):
-    audioSignal, sr = sf.read(audio_path, dtype='int16', always_2d=True)
-    audioSignal = audioSignal.mean(axis=-1).astype('int16')
+def get_spectrogram(audioSignal, sr):
     if sr != 48000:
       print("ERROR: file {} has a sampling rate of {}".format(audio_path, sr))    
     to_pad = int(1 * sr - audioSignal.shape[0])

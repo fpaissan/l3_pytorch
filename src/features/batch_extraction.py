@@ -24,8 +24,8 @@ def parse_arguments():
 
 def extract_features(data_dir, output_dir, limit = -1):
 
-    audio_file_list = os.listdir(os.path.join(data_dir, 'video'))
-    video_file_list = os.listdir(os.path.join(data_dir, 'audio'))
+    audio_file_list = os.listdir(os.path.join(data_dir, 'audio'))
+    video_file_list = os.listdir(os.path.join(data_dir, 'video'))
 
     audio_file_list = [audio_file_list[i].split('.')[:-1][0] for i in range(len(audio_file_list))]
     video_file_list = [video_file_list[i].split('.')[:-1][0] for i in range(len(video_file_list))]
@@ -55,7 +55,10 @@ def extract_features(data_dir, output_dir, limit = -1):
         frame, check = get_frame(video_path)
         if check == -1:
           continue
-        spectrogram = get_spectrogram(audio_path)
+
+        audioSignal, sr = sf.read(audio_path, dtype='int16', always_2d=True)
+        spectrogram = get_spectrogram(audioSignal.mean(axis=-1).astype('int16'), sr)
+        
         audioBatch.append(spectrogram)
         videoBatch.append(frame)
         labelBatch.append(np.asarray([i % 2, 1 - (i % 2)]))
