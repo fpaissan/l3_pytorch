@@ -8,7 +8,8 @@ import torch.optim as optim
 import torch.nn as nn
 import torch
 
-import tqdm as tqdm
+from tqdm import tqdm
+import numpy as np
 import pickle
 import time
 import os
@@ -47,10 +48,10 @@ if __name__ == "__main__":
     avcModel.load_state_dict(torch.load(args.trained_model, map_location=torch.device('cpu')))
 
     # Create classification model
-    classModel = classification_trainer.ClassificationNet(avcModel.audioNet)
+    classModel = model_trainer.ClassificationNet(avcModel.audioNet)
 
-    classModel.classOptimizer = optim.Adam(classModel.parameters(), lr=p.CLASS_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.CLASS_weightdecay, amsgrad=False)
-    classModel.classCriterion = nn.CrossEntropyLoss()
+    classModel.optimizer = optim.Adam(classModel.parameters(), lr=p.CLASS_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.CLASS_weightdecay, amsgrad=False)
+    classModel.criterion = nn.CrossEntropyLoss()
 
     # initialize summary writer
     os.system("rm -rd {}".format(args.log_dir))
@@ -65,11 +66,11 @@ if __name__ == "__main__":
 
         train_batches = list()
         for idx in range(len(train_folds)):
-            for f in os.listdir(args.path.join(args.feat_dir, train_folds[idx])):
-                train_batches.append(os.path.join(args.feat_dir, f))
+            for f in os.listdir(os.path.join(args.feat_dir, train_folds[idx])):
+                train_batches.append(os.path.join(args.feat_dir, train_folds[idx], f))
 
-        test_batches = [os.path.join(args.feat_dir, f) for f in os.listdir(args.path.join(args.feat_dir, test_fold))]
-        val_batches = [os.path.join(args.feat_dir, f) for f in os.listdir(args.path.join(args.feat_dir, val_fold))]
+        test_batches = [os.path.join(args.feat_dir, test_fold, f) for f in os.listdir(os.path.join(args.feat_dir, test_fold))]
+        val_batches = [os.path.join(args.feat_dir, val_fold, f) for f in os.listdir(os.path.join(args.feat_dir, val_fold))]
 
         best_loss = np.inf
         for e in range(p.AVC_epochs):
@@ -98,7 +99,7 @@ if __name__ == "__main__":
             if val_loss < best_loss:
                 print("INFO: saving checkpoint!")
                 best_loss = val_loss
-                torch.save(classModel.state_dict(), os.path.join(args.ckp_dir, 'best_val.ckp'))
+                torch.save(classModel.state_dict(), os.path.join(args.ckp_dir, 'CLASSIFICATION_best_val.ckp'))
 
             writer.add_scalar('Loss/test_{}'.format(id_log), sum(loss)/len(loss), e)
             writer.add_scalar('Acc/test_{}'.format(id_log), sum(acc)/len(acc), e)

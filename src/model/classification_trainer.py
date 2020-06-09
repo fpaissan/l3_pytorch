@@ -43,20 +43,19 @@ def train(audio, label, model):
     model.train()
     model.cuda()
 
-    audio, label = torch.from_numpy(audio), torch.from_numpy(label) 
+    audio, label = torch.from_numpy(audio), torch.from_numpy(label.astype(np.long))
     audio, label = audio.to("cuda"), label.to("cuda")
     model.optimizer.zero_grad()
 
     # (bs, 41, 1, 257, 196)
-    pred = list()
+    pred = np.ndarray(shape=(len(label), par.NUM_CLASSES['esc50']))
+    pred = torch.from_numpy(np.asarray(pred, dtype = np.float32))
+    pred = pred.to("cuda")
     for i in range(audio.shape[0]):
         sample_out = model.forward(audio[i])
-        sample_out = torch.sum(sample_out, dim=0)
-        pred.append(torch.max(sample_out, 1)[1])
-
-    pred = torch.from_numpy(np.asarray(pred))
-    pred = pred.to("cuda")
-
+        sample_out = torch.mean(sample_out, dim=0)
+        pred[i] = sample_out
+    
     loss = model.criterion(pred, label)
     loss.backward()
     model.optimizer.step()
@@ -65,19 +64,26 @@ def train(audio, label, model):
     correct = pred.eq(label.view_as(pred)).sum().item()/pred.shape[0]
     return loss.item(), correct # loss, accuracy 
 
-def test(audio, label, model, criterion):
+def test(audio, label, model):
     model.eval() # chech with batch normalization
     model.cuda()
-    audio, label = torch.from_numpy(audio), torch.from_numpy(label) 
+    audio, label = torch.from_numpy(audio), torch.from_numpy(label.astype(np.long)) 
     audio, label = audio.to("cuda"), label.to("cuda")
-    output = model.forward(audio)
 
+    # (bs, 41, 1, 257, 196)
+    pred = np.ndarray(shape=(len(label), par.NUM_CLASSES['esc50']))
+    pred = torch.from_numpy(np.asarray(pred, dtype = np.float32))
+    pred = pred.to("cuda")
+    for i in range(audio.shape[0]):
+        sample_out = model.forward(audio[i])
+        sample_out = torch.mean(sample_out, dim=0)
+        pred[i] = sample_out
+    
     #loss calculation
-    label = torch.max(label, 1)[1]
-    loss = criterion(output, label)
+    loss = model.criterion(pred, label)
 
     # remove one hot encodind
-    pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+    pred = pred.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
     correct = pred.eq(label.view_as(pred)).sum().item()/pred.shape[0] # pred.shape[0] batch size
 
     return loss.item(), correct # loss, accuracy 
