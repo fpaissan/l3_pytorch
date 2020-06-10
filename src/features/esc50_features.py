@@ -60,17 +60,10 @@ def extract_features(data_dir, output_dir, limit = -1):
 
         class_label = int(basename.split('-')[-1])
         labelBatch.append(class_label)
-
+        
         if(i % par.ESC_batchsize == (par.ESC_batchsize - 1)):
-            try:
-                audioBatch, labelBatch = np.asarray(audioBatch, dtype = np.float32), np.asarray(labelBatch, dtype = np.double)
-
-            except Exception as e:
-                print(e)
-                audioBatch = []
-                labelBatch = []  
-                continue
-
+            audioBatch, labelBatch = np.asarray(audioBatch, dtype = np.float32), np.asarray(labelBatch, dtype = np.double)
+            
             batch = [audioBatch, labelBatch]
             with open(os.path.join(output_dir, 'fold' + basename.split('-')[0], 'batch_' + str(int(i / par.batchSize)) + '.pkl'), 'wb') as f:
                 pickle.dump(batch, f)
@@ -78,15 +71,14 @@ def extract_features(data_dir, output_dir, limit = -1):
             audioBatch = []
             labelBatch = []
 
-    try:
-        audioBatch, labelBatch = np.asarray(audioBatch, dtype = np.float32), np.asarray(labelBatch, dtype = np.double)
-
-    except Exception as e:
-        print(e)
-
+    audioBatch, labelBatch = np.asarray(audioBatch, dtype = np.float32), np.asarray(labelBatch, dtype = np.double)
     batch = [audioBatch, labelBatch]
     with open(os.path.join(output_dir, 'fold' + basename.split('-')[0], 'batch_' + str(int(i / par.batchSize)) + '.pkl'), 'wb') as f:
         pickle.dump(batch, f)
+    
+    audioBatch = []
+    labelBatch = []
+
 
 if __name__ == "__main__":
     args = parse_arguments()

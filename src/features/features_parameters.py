@@ -26,6 +26,6 @@ limit = {'train': -1,
 
 
 # ESC-50 related
-ESC_batchsize = 4 
+ESC_batchsize = 16 
 ESC_hopsize = 0.1
 ESC_limit = -1
