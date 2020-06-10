@@ -16,10 +16,12 @@ class ClassificationNet(nn.Module):
         self.criterion = criterion
 
         self.audioNet = audioNet
+        self.audioNet.requires_grad = False
+        
         
         # Disables fine-tuning
-        for param in self.audioNet.parameters():
-            param.requires_grad = False
+        #for param in self.audioNet.parameters():
+        #    param.requires_grad = False
 
         # self.lin0 = nn.Linear(512, 512)
         self.lin1 = nn.Linear(512, 128)
@@ -54,7 +56,7 @@ def train(audio, label, model):
         sample_out = model.forward(audio[i])
         sample_out = torch.mean(sample_out, dim=0)
         pred[i] = sample_out
-    
+   
     loss = model.criterion(pred, label)
     loss.backward()
     model.optimizer.step()
