@@ -20,6 +20,10 @@ def parse_arguments():
                         type=str,
                         help='Path to directory where output files will be stored')
 
+    parser.add_argument('--overwrite',
+                        action='store_true',
+                        help='Overwrite the feature folder')        
+
     return parser.parse_args()
 
 def extract_features(data_dir, output_dir, limit = -1):
@@ -89,6 +93,11 @@ if __name__ == "__main__":
     args = parse_arguments()
     sub_folders = ['train', 'test']
     
+    if args.overwrite:
+      os.system("rm -rd {}".format(args.output_dir))
+    else:
+      print("WARNING: overwrite is not True (hai la mamma puttana? ricordatelo!!)")
+
     os.makedirs(args.output_dir, exist_ok=True)
     os.makedirs(os.path.join(args.output_dir, 'train'), exist_ok=True)
     os.makedirs(os.path.join(args.output_dir, 'test'), exist_ok=True)

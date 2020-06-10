@@ -23,6 +23,7 @@ VIDEO_cmpMult = 1
 VIDEO_channels = np.array([64, 128, 256])*VIDEO_cmpMult
 
 #Merged model parameters
+double_convolution = False 
 AVC_weightdecay = 0
 AVC_lr = 1e-4
 AVC_epochs = 1000

@@ -54,10 +54,11 @@ if __name__ == "__main__":
 
   # initialize optimizer 
   model = avcNet_generator()
-
+  print(model)
+  
   model.optimizer = optim.Adam(model.parameters(), lr=p.AVC_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.AVC_weightdecay, amsgrad=False)
   model.criterion = nn.CrossEntropyLoss()
-  
+
   # initialize summary writer
   os.system("rm -rd {}".format(args.log_dir))
   writer = SummaryWriter(args.log_dir)
