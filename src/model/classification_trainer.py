@@ -16,12 +16,12 @@ class ClassificationNet(nn.Module):
         self.criterion = criterion
 
         self.audioNet = audioNet
-        self.audioNet.requires_grad = False
+        # self.audioNet.requires_grad = False
         
         
         # Disables fine-tuning
-        #for param in self.audioNet.parameters():
-        #    param.requires_grad = False
+        for param in self.audioNet.parameters():
+            param.requires_grad = False
 
         # self.lin0 = nn.Linear(512, 512)
         self.lin1 = nn.Linear(512, 128)

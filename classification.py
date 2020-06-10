@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     # Create classification model
     classModel = model_trainer.ClassificationNet(avcModel.audioNet)
-    print(classModel)
+    print(classModel.parameters())
     classModel.optimizer = optim.Adam(classModel.parameters(), lr=p.CLASS_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.CLASS_weightdecay, amsgrad=False)
     classModel.criterion = nn.CrossEntropyLoss()
 
