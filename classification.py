@@ -11,6 +11,7 @@ import torch
 from tqdm import tqdm
 import numpy as np
 import pickle
+import random
 import time
 import os
 
@@ -75,6 +76,8 @@ if __name__ == "__main__":
         best_loss = np.inf
         for e in range(p.AVC_epochs):
             print("INFO: epoch {} of {}".format(e + 1, p.CLASS_epochs))
+            random.shuffle(train_batches)
+
             loss, acc = list(), list()    
             for batch in tqdm(train_batches):
                 with open(batch, "rb") as f:
