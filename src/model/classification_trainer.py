@@ -16,8 +16,6 @@ class ClassificationNet(nn.Module):
         self.criterion = criterion
 
         self.audioNet = audioNet
-        #self.audioNet.requires_grad = False
-        
         
         # Disables fine-tuning
         for param in self.audioNet.parameters():

@@ -11,6 +11,7 @@ import torch
 from tqdm import tqdm
 import numpy as np
 import pickle
+import random
 import time
 import os
 
@@ -49,7 +50,7 @@ if __name__ == "__main__":
 
     # Create classification model
     classModel = model_trainer.ClassificationNet(avcModel.audioNet)
-    print(classModel)
+    print(classModel.parameters())
     classModel.optimizer = optim.Adam(classModel.parameters(), lr=p.CLASS_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.CLASS_weightdecay, amsgrad=False)
     classModel.criterion = nn.CrossEntropyLoss()
 
@@ -75,6 +76,8 @@ if __name__ == "__main__":
         best_loss = np.inf
         for e in range(p.AVC_epochs):
             print("INFO: epoch {} of {}".format(e + 1, p.CLASS_epochs))
+            random.shuffle(train_batches)
+
             loss, acc = list(), list()    
             for batch in tqdm(train_batches):
                 with open(batch, "rb") as f:

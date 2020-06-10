@@ -1,21 +1,24 @@
-import src.model.avc_trainer as model_trainer
 from src.model.avc_trainer import avcNet_generator
+import src.model.avc_trainer as model_trainer
 import src.model.model_parameters as p
+
+from torch.utils.tensorboard import SummaryWriter
 import torch.optim as optim
 import torch.nn as nn
-from torch.utils.tensorboard import SummaryWriter
-
-import numpy as np
 import torchvision
 import torch
-import os
+
+from tqdm import tqdm
+import numpy as np
 import argparse
+import random
 import pickle
 import gzip
-from tqdm import tqdm
-torch.set_default_tensor_type(torch.FloatTensor)
 import time
 import os
+
+torch.set_default_tensor_type(torch.FloatTensor)
+
 #Net debugging
 # X = []
 # X.append(torch.tensor(np.ones(shape=(par.AVC_batchSize, par.AUDIO_C, par.AUDIO_H, par.AUDIO_W))))
@@ -65,6 +68,8 @@ if __name__ == "__main__":
   best_loss = np.inf
   for e in range(p.AVC_epochs):
     print("INFO: epoch {} of {}".format(e + 1, p.AVC_epochs))
+    random.shuffle(train_batches)
+
     loss, acc = list(), list()    
     for batch in tqdm(train_batches):
       with open(batch,"rb") as f:
