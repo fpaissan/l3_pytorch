@@ -33,9 +33,9 @@ class VGGSound_Dataset(Dataset):
 
         else:           #Save label 0
           
-          rand_i = random.randint(0, len(self.file_list))
+          rand_i = random.randint(0, len(self.file_list) - 1)
           while(rand_i == i):
-              rand_i = random.randint(0, len(self.file_list))
+              rand_i = random.randint(0, len(self.file_list) - 1)
 
           audio_path = os.path.join(self.data_dir, 'audio', self.file_list[rand_i] + '.flac')
           video_path = os.path.join(self.data_dir, 'video', self.file_list[i] + '.mp4')

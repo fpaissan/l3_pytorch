@@ -7,7 +7,7 @@ import torch.nn as nn
 import numpy as np
 import torchvision
 import torch
-import torch.nn.functional as F
+
 
 class ClassificationNet(nn.Module):
     def __init__(self, audioNet, optimizer = None, criterion = None):
