@@ -1,7 +1,0 @@
-.idea/**.pyc*.err*.out
-*.out
-*.err
-/__pycache__/*
-*/__pycache__/*
-*/*/__pycache__/*
-*/*/*/__pycache__/*
