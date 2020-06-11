@@ -1,0 +1,7 @@
+.idea/*
+*.pyc
+*.err
+*.out
+setup.sh
+bin/
+__pycache__/
