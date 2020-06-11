@@ -43,7 +43,6 @@ def train(audio, video, label, model):
     model.train()
     model.cuda()
 
-    audio, video, label = torch.from_numpy(audio), torch.from_numpy(video), torch.from_numpy(label) 
     audio, video, label = audio.to("cuda"), video.to("cuda"), label.to("cuda")
     model.optimizer.zero_grad()
     output = model.forward(audio, video)
@@ -62,7 +61,6 @@ def train(audio, video, label, model):
 def test(audio, video, label, model):
     model.eval() # chech with batch normalization
     model.cuda()
-    audio, video, label = torch.from_numpy(audio), torch.from_numpy(video), torch.from_numpy(label) 
     audio, video, label = audio.to("cuda"), video.to("cuda"), label.to("cuda")
     output = model.forward(audio, video)
 

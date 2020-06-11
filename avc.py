@@ -1,8 +1,10 @@
+from src.features.avc_dataloader import VGGSound_Dataset
 from src.model.avc_trainer import avcNet_generator
 import src.model.avc_trainer as model_trainer
 import src.model.model_parameters as p
 
 from torch.utils.tensorboard import SummaryWriter
+from torch.utils.data import DataLoader
 import torch.optim as optim
 import torch.nn as nn
 import torchvision
@@ -28,7 +30,7 @@ torch.set_default_tensor_type(torch.FloatTensor)
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Moves data from a single folder to train test folder')
-    parser.add_argument('--feat-dir',
+    parser.add_argument('--data-dir',
                         action='store',
                         type=str,
                         help='Path to directory where data files are stored')
@@ -42,14 +44,19 @@ def parse_arguments():
                         type=str,
                         help='Path to directory where data files are stored',
                         default = "/scratch/gcerutti/VGGsound/ckp/")
+    parser.add_argument('--batch-size',
+                    action='store',
+                    type=int,
+                    help='Path to directory where data files are stored',
+                    default = 16)
     return parser.parse_args()
 
 if __name__ == "__main__":
   args = parse_arguments()
   id_log = str(int(time.time()))
   # create train_dir and test_dir variables
-  train_dir = os.path.join(args.feat_dir, 'train')
-  test_dir = os.path.join(args.feat_dir, 'test')
+  train_dir = os.path.join(args.data_dir, 'train')
+  test_dir = os.path.join(args.data_dir, 'test')
   os.makedirs(args.ckp_dir, exist_ok = True)
 
   # initialize optimizer 
@@ -64,17 +71,17 @@ if __name__ == "__main__":
   writer = SummaryWriter(args.log_dir)
 
   # list with batches
-  train_batches = [os.path.join(train_dir, f) for f in os.listdir(train_dir)]
-  test_batches = [os.path.join(test_dir, f) for f in os.listdir(test_dir)]
+  train_dataloader = DataLoader(VGGSound_Dataset(train_dir), batch_size = args.batch_size, shuffle=True, num_workers=4)
+  test_dataloader = DataLoader(VGGSound_Dataset(test_dir), batch_size = args.batch_size, shuffle=True, num_workers=4)
   best_loss = np.inf
+
+
   for e in range(p.AVC_epochs):
     print("INFO: epoch {} of {}".format(e + 1, p.AVC_epochs))
-    random.shuffle(train_batches)
-
     loss, acc = list(), list()    
-    for batch in tqdm(train_batches):
-      with open(batch,"rb") as f:
-        audio, video, label = pickle.load(f)
+    # to be replaced with dataloader
+    for batch in tqdm(train_dataloader):
+      audio, video, label = batch
       loss_batch, acc_batch = model_trainer.train(audio, video, label, model)
       loss.append(loss_batch)
       acc.append(acc_batch)
@@ -82,9 +89,8 @@ if __name__ == "__main__":
     writer.add_scalar('Acc/train_{}'.format(id_log), sum(acc)/len(acc), e)
     
     loss, acc = list(), list()    
-    for batch in tqdm(test_batches):
-      with open(batch,"rb") as f:
-        audio, video, label = pickle.load(f)
+    for batch in tqdm(test_dataloader):
+      audio, video, label = batch
       loss_batch, acc_batch = model_trainer.test(audio, video, label, model)
       loss.append(loss_batch)
       acc.append(acc_batch)

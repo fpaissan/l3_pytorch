@@ -1,4 +1,4 @@
-import features_parameters as par
+import src.features.features_parameters as par
 
 import soundfile as sf
 import numpy as np
