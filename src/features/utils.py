@@ -1,9 +1,9 @@
 import src.features.features_parameters as par
 
+import matplotlib.pyplot as plt
 import soundfile as sf
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
 
 def frame(data, window_length, hop_length):
   num_samples = data.shape[0]
@@ -26,6 +26,18 @@ def stft_magnitude(signal, fft_length,
   windowed_frames = frames * window
 
   return np.abs(np.fft.rfft(windowed_frames, int(fft_length)))
+
+def audio_feat(audio, sr):
+  hop_length = int(par.ESC_hopsize * sr)
+  frame_length = sr
+
+  x = librosa.util.utils.frame(audio, frame_length=frame_length, hop_length=hop_length).T # Audio frames
+  
+  specs = list()
+  for frame in x:
+      specs.append(get_spectrogram(frame, sr, axis = 1))
+
+  return np.asarray(specs, np.double) # Maybe add a dimension
 
 def get_frame(video_path):
     cap = cv2.VideoCapture(video_path)

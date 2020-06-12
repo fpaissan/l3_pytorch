@@ -1,9 +1,9 @@
-import os
 from torch.utils.data import Dataset, DataLoader
-import random
 from src.features.utils import *
-import resampy
 import soundfile as sf
+import resampy
+import random
+import os
 
 class VGGSound_Dataset(Dataset):
     """VGGSound dataset."""
