@@ -1,6 +1,7 @@
 from torch.utils.data import Dataset, DataLoader
-from src.features.utils import *
+from sklearn.preprocessing import OneHotEncoder
 import soundfile as sf
+from src.features.utils import *
 import resampy
 import random
 import os
@@ -24,20 +25,23 @@ class ESC50_Dataset(Dataset):
       
       spectrograms = audio_feat(audioSignal, 48000)
       
-      basename = file_list[i].split('.')[0]    # Actually not the exact fold division  
+      basename = self.file_list[i].split('.')[0]    # Actually not the exact fold division  
 
       class_label = int(basename.split('-')[-1])
+      label = np.zeros(shape=(par.NUM_CLASSES['esc50']))  # onehot encode
+      label[class_label - 1] = 1
       
-      return spectrograms, class_label
+      return (spectrograms, label)
 
-if __name__ == "__main__":
-  train_set = ESC50_Dataset("/scratch/gcerutti/VGGsound/data/Split/train/")
-  example = train_set[1]
-  print("{} {} {}".format(example[0].shape, example[1].shape, example[2].shape))
+##if __name__ == "__main__":
+#  train_set = ESC50_Dataset("/media/fpaissan/DATA/Dataset/ESC-50/audio/")
+#  example = train_set[1]
+  #print(len(example))
+  #print("{} {}".format(example[0].shape, example[1].shape))
 
-  dataloader = DataLoader(train_set, batch_size = 4, shuffle = True, num_workers = 1)
+#  dataloader = DataLoader(train_set, batch_size = 4, shuffle = True, num_workers = 1)
 
-  for i_batch, batch in enumerate(dataloader):
-    example = batch
-    print("{} {} {}".format(example[0].shape, example[1].shape, example[2].shape))
-  # playing with a dataloader
+#  for i_batch, batch in enumerate(dataloader):
+#    example = batch
+#    print("{} {}".format(example[0].shape, example[1].shape))
+    

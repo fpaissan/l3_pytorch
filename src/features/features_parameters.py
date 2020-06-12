@@ -22,6 +22,7 @@ limit = {'train': -1,
 
 
 # ESC-50 related
+NUM_CLASSES = {'esc50': 50}
 ESC_batchsize = 16 
 ESC_hopsize = 0.1
 ESC_limit = -1
