@@ -1,7 +1,6 @@
 from torch.utils.data import Dataset, DataLoader
-from sklearn.preprocessing import OneHotEncoder
-import soundfile as sf
 from src.features.utils import *
+import soundfile as sf
 import resampy
 import random
 import os
@@ -28,7 +27,7 @@ class ESC50_Dataset(Dataset):
       basename = self.file_list[i].split('.')[0]    # Actually not the exact fold division  
 
       class_label = int(basename.split('-')[-1])
-      label = np.zeros(shape=(par.NUM_CLASSES['esc50']))  # onehot encode
+      label = np.zeros(shape=(par.NUM_CLASSES['esc50']), dtype = np.long)  # onehot encode
       label[class_label - 1] = 1
       
       return (spectrograms, label)

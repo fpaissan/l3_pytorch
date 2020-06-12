@@ -43,7 +43,6 @@ def train(audio, label, model):
     model.train()
     model.cuda()
 
-    audio, label = torch.from_numpy(audio), torch.from_numpy(label.astype(np.long))
     audio, label = audio.to("cuda"), label.to("cuda")
     model.optimizer.zero_grad()
     # (bs, 41, 1, 257, 196)
@@ -55,7 +54,7 @@ def train(audio, label, model):
         sample_out = torch.mean(sample_out, dim=0)
         pred[i] = sample_out
 
-    print("[DEBUG] label = {}".format(label))   
+    label = torch.max(label, 1)[1]   #Remove one hot encoding  
     loss = model.criterion(pred, label)
     loss.backward()
     model.optimizer.step()
@@ -66,8 +65,7 @@ def train(audio, label, model):
 
 def test(audio, label, model):
     model.eval() # chech with batch normalization
-    model.cuda()
-    audio, label = torch.from_numpy(audio), torch.from_numpy(label.astype(np.long)) 
+    model.cuda() 
     audio, label = audio.to("cuda"), label.to("cuda")
 
     # (bs, 41, 1, 257, 196)
@@ -80,6 +78,7 @@ def test(audio, label, model):
         pred[i] = sample_out
     
     #loss calculation
+    label = torch.max(label, 1)[1]
     loss = model.criterion(pred, label)
 
     # remove one hot encodind
