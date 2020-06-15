@@ -99,7 +99,7 @@ if __name__ == "__main__":
     if test_loss < best_loss:
       print("INFO: saving checkpoint!")
       best_loss = test_loss
-      torch.save(model.state_dict(), os.path.join(args.ckp_dir, 'AVC_best_val.ckp'))
+      torch.save(model.state_dict(), os.path.join(args.ckp_dir, '{}_AVC_best_val.ckp'.format(id_log)))
     writer.add_scalar('Loss/test_{}'.format(id_log), sum(loss)/len(loss), e)
     writer.add_scalar('Acc/test_{}'.format(id_log), sum(acc)/len(acc), e)
 
