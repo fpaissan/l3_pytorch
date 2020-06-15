@@ -1,4 +1,3 @@
-import src.model.audio_model as audio_model
 import src.model.model_parameters as par
 import torch.nn.functional as F
 
@@ -10,16 +9,10 @@ import torch
 
 
 class ClassificationNet(nn.Module):
-    def __init__(self, audioNet, optimizer = None, criterion = None):
+    def __init__(self, optimizer = None, criterion = None):
         super(ClassificationNet, self).__init__()
         self.optimizer = optimizer
         self.criterion = criterion
-
-        self.audioNet = audioNet
-        
-        # Disables fine-tuning
-        for param in self.audioNet.parameters():
-            param.requires_grad = False
 
         # self.lin0 = nn.Linear(512, 512)
         self.lin1 = nn.Linear(512, 128)
@@ -28,9 +21,7 @@ class ClassificationNet(nn.Module):
         self.relu = nn.ReLU()
         self.soft = nn.Softmax()
 
-    def forward(self, audioX):
-        x = self.audioNet.forward(audioX)
-
+    def forward(self, x):
         # x = self.lin0(x)
         # x = self.relu(x)
         x = self.lin1(x)
@@ -54,7 +45,7 @@ def train(audio, label, model):
         sample_out = torch.mean(sample_out, dim=0)
         pred[i] = sample_out
 
-    label = torch.max(label, 1)[1]   #Remove one hot encoding  
+    # label = torch.max(label, 1)[1]   #Remove one hot encoding  
     loss = model.criterion(pred, label)
     loss.backward()
     model.optimizer.step()
@@ -78,7 +69,7 @@ def test(audio, label, model):
         pred[i] = sample_out
     
     #loss calculation
-    label = torch.max(label, 1)[1]
+    # label = torch.max(label, 1)[1]
     loss = model.criterion(pred, label)
 
     # remove one hot encodind
