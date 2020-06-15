@@ -7,14 +7,17 @@ import os
 
 class ESC50_Dataset(Dataset):
     """VGGSound dataset."""
-
-    def __init__(self, data_dir):
+    def __init__(self, data_dir, fold_idx):
       self.data_dir = data_dir    # Path to 'audio' folder
-      self.file_list = os.listdir(data_dir)
-
+      self.fold_idx = fold_idx
+      list_dir = os.listdir(data_dir)
+      fold_mask = np.array([x[0] for x in list_dir])  # Array of first letters
+      
+      self.file_list = np.array(list_dir)[np.where(fold_mask == '1')]   # Update file list for fold
+    
     def __len__(self):          
         return len(self.file_list)
-
+    
     def __getitem__(self, i):
       audio_path = os.path.join(self.data_dir, self.file_list[i])
 

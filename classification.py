@@ -65,48 +65,44 @@ if __name__ == "__main__":
 
     # Extract train/test/val folds
     folders_fold = os.listdir(args.data_dir)
+    fold_idx = [0, 1, 2, 3, 4]
     for i, fold in enumerate(folders_fold):
-        #test_fold = fold
-        #val_fold = folders_fold[(i + 1) % len(folders_fold)]
-        #train_folds = list(set(folders_fold) - set([test_fold, val_fold]))
-
-        #train_dataloaders = list()
-        #for idx in range(len(train_folds)):
-        #    for f in os.listdir(os.path.join(args.data_dir, train_folds[idx])):
-        #        train_dataloader.append(DataLoader(ESC50_Dataset(os.path.join(args.data_dir, train_folds[idx])), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers))
-
-        train_dataloader = DataLoader(ESC50_Dataset(args.data_dir), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
-        #test_dataloader = DataLoader(ESC50_Dataset(os.path.join(args.data_dir, test_fold)), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
-        #val_dataloader = DataLoader(ESC50_Dataset(os.path.join(args.data_dir, val_fold)), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
+        test_dataloader = DataLoader(ESC50_Dataset(args.data_dir, i), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
+        val_dataloader = DataLoader(ESC50_Dataset(args.data_dir, (i + 1) % len(folders_fold)), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
+        train_idx = list(set(fold_idx) - set([i, (i + 1) % len(folders_fold)]))
+        train_dataloaders = [DataLoader(ESC50_Dataset(args.data_dir, train_idx[0]), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers),
+                            DataLoader(ESC50_Dataset(args.data_dir, train_idx[1]), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers),
+                            DataLoader(ESC50_Dataset(args.data_dir, train_idx[2]), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)]
 
         best_loss = np.inf
         for e in range(p.AVC_epochs):
             print("INFO: epoch {} of {}".format(e + 1, p.CLASS_epochs))
 
-            loss, acc = list(), list()    
-            for batch in tqdm(train_dataloader):
-                audio, label = batch
+            for train_loader in train_dataloaders:
+                loss, acc = list(), list()
+                for batch in tqdm(train_loader):
+                    audio, label = batch
 
-                loss_batch, acc_batch = model_trainer.train(audio.double(), label, classModel)
-                loss.append(loss_batch)
-                acc.append(acc_batch)
+                    loss_batch, acc_batch = model_trainer.train(audio.double(), label, classModel)
+                    loss.append(loss_batch)
+                    acc.append(acc_batch)
                 
-            writer.add_scalar('Loss/train_{}'.format(id_log), sum(loss)/len(loss), e)
-            writer.add_scalar('Acc/train_{}'.format(id_log), sum(acc)/len(acc), e)
+                writer.add_scalar('Loss/train_{}'.format(id_log), sum(loss)/len(loss), e)
+                writer.add_scalar('Acc/train_{}'.format(id_log), sum(acc)/len(acc), e)
             
-            #loss, acc = list(), list()    
-            #for batch in tqdm(val_batches):
-            #    with open(batch,"rb") as f:
-            #        audio, label = pickle.load(f)
-            #    loss_batch, acc_batch = model_trainer.test(audio, label, classModel)
-            #    loss.append(loss_batch)
-            #    acc.append(acc_batch)
+            loss, acc = list(), list()    
+            for batch in tqdm(val_dataloader):
+               with open(batch,"rb") as f:
+                   audio, label = pickle.load(f)
+               loss_batch, acc_batch = model_trainer.test(audio, label, classModel)
+               loss.append(loss_batch)
+               acc.append(acc_batch)
             
-            #val_loss = sum(loss)/len(loss)
-            #if val_loss < best_loss:
-            #    print("INFO: saving checkpoint!")
-            #    best_loss = val_loss
-            #    torch.save(classModel.state_dict(), os.path.join(args.ckp_dir, 'CLASSIFICATION_best_val.ckp'))
+            val_loss = sum(loss)/len(loss)
+            if val_loss < best_loss:
+               print("INFO: saving checkpoint!")
+               best_loss = val_loss
+               torch.save(classModel.state_dict(), os.path.join(args.ckp_dir, 'CLASSIFICATION_best_val.ckp'))
 
-            #writer.add_scalar('Loss/test_{}'.format(id_log), sum(loss)/len(loss), e)
-            #writer.add_scalar('Acc/test_{}'.format(id_log), sum(acc)/len(acc), e)
+            writer.add_scalar('Loss/test_{}'.format(id_log), sum(loss)/len(loss), e)
+            writer.add_scalar('Acc/test_{}'.format(id_log), sum(acc)/len(acc), e)
