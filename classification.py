@@ -12,6 +12,7 @@ import torch
 
 from tqdm import tqdm
 import numpy as np
+import datetime
 import pickle
 import random
 import time
@@ -43,7 +44,8 @@ def parse_arguments():
 if __name__ == "__main__":
     args = parse_arguments()
 
-    id_log = str(int(time.time()))
+    # year-month-day-hour-minute-second
+    id_log = str(datetime.datetime.now()).split('.')[0].replace(" ", "-")
 
     # Create classification model
     classModel = model_trainer.ClassificationNet()
@@ -52,8 +54,8 @@ if __name__ == "__main__":
     classModel.criterion = nn.CrossEntropyLoss()
 
     # initialize summary writer
-    os.system("rm -rd {}".format(args.log_dir))
-    writer = SummaryWriter(args.log_dir)
+    # os.system("rm -rd {}".format(args.log_dir))
+    writer = SummaryWriter(args.log_dir, filename_suffix=id_log + "_class")
 
     # Extract train/test/val folds
     fold_idx = [1, 2, 3, 4, 5]
@@ -69,8 +71,8 @@ if __name__ == "__main__":
         for e in range(p.AVC_epochs):
             print("INFO: epoch {} of {}".format(e + 1, p.CLASS_epochs))
 
+            loss, acc = list(), list()
             for train_loader in train_dataloaders:
-                loss, acc = list(), list()
                 for batch in tqdm(train_loader):
                     embedding, label = batch
 
