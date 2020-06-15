@@ -49,7 +49,10 @@ def audio_feat(audio, sr):
 
 def extract_features(model, data_dir, output_dir, limit = -1):
     model.cuda()
-    input()
+    model.eval()
+    for par in model.parameters():
+      par.requires_grad = False
+
     file_list = os.listdir(data_dir)
     # audio_file_list = [audio_file_list[i].split('.')[:-1][0] for i in range(len(audio_file_list))]
 
@@ -70,7 +73,7 @@ def extract_features(model, data_dir, output_dir, limit = -1):
         features = model.forward(spectrograms)
         features = features.cpu().numpy()
 
-        basename = self.file_list[i].split('.')[0]
+        basename = file_list[i].split('.')[0]
         class_label = int(basename.split('-')[-1])
 
         with open(os.path.join(output_dir, 'fold' + basename.split('-')[0], basename + '.pkl'), 'wb') as f:
@@ -81,7 +84,7 @@ if __name__ == "__main__":
 
     avcModel = avcNet_generator()
     avcModel.load_state_dict(torch.load(args.trained_model))
-    
+
     for i in range(1, 6):
         os.makedirs(os.path.join(args.output_dir, 'fold' + str(i)), exist_ok=True)
 
