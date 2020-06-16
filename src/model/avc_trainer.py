@@ -49,7 +49,7 @@ def train(audio, video, label, model):
     # Get audio & video embeddings
 
     output = model.forward(audio, video)
-    input()
+    
     # remove one hot encodind
     label = torch.max(label, 1)[1]
 
