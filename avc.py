@@ -39,7 +39,7 @@ def parse_arguments():
                         action='store',
                         type=str,
                         help='Path to directory where data files are stored',
-                        default = "/home/gcerutti/workspace/runs/")
+                        default = "/home/gcerutti/workspace/runs_AVC/")
     parser.add_argument('--ckp-dir',
                         action='store',
                         type=str,
@@ -70,7 +70,7 @@ if __name__ == "__main__":
   model.criterion = nn.CrossEntropyLoss()
 
   # initialize summary writer
-  # os.system("rm -rd {}".format(args.log_dir))
+  os.system("rm -rd {}".format(args.log_dir))
   writer = SummaryWriter(args.log_dir, filename_suffix=id_log + "_AVC")
 
   # list with batches

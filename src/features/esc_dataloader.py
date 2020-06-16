@@ -10,7 +10,7 @@ import os
 class ESC50_Dataset(Dataset):
     """VGGSound dataset."""
     def __init__(self, data_dir, fold_idx):
-        self.file_list = glob.glob(os.path.join(data_dir,"fold{}/*".format(fold_idx)))
+        self.file_list = glob.glob(os.path.join(data_dir,"fold{}/*".format(fold_idx + 1)))
 
     def __len__(self):          
         return len(self.file_list)
