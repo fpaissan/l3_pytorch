@@ -44,8 +44,9 @@ def parse_arguments():
 if __name__ == "__main__":
     args = parse_arguments()
 
-    id_log = str(int(time.time()))
-
+    # year-month-day-hour-minute-second
+    id_log = str(datetime.datetime.now()).split('.')[0].replace(" ", "-")  # create train_dir and test_dir variables
+    
     # Create classification model
     classModel = model_trainer.ClassificationNet()
 

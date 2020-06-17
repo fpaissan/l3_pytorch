@@ -41,9 +41,6 @@ class Net(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self, x):
-        #x = self.Spect(x)
-        #x = self.L3_Norm(x)
-
         # 1st conv block
         x = self.conv1(x)
         x = self.conv1_bn(x)
