@@ -5,6 +5,7 @@ import src.model.model_parameters as p
 
 from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader
+import torch.nn.functional as F
 import torch.optim as optim
 import torch.nn as nn
 import torchvision
@@ -64,7 +65,7 @@ if __name__ == "__main__":
   print(model)
   
   model.optimizer = optim.Adam(model.parameters(), lr=p.AVC_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.AVC_weightdecay, amsgrad=False)
-  model.criterion = nn.CrossEntropyLoss()
+  model.criterion = F.nll_loss
 
   # initialize summary writer
   os.system("rm -rd {}".format(args.log_dir))

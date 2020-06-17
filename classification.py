@@ -6,6 +6,7 @@ import argparse
 
 from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader
+import torch.nn.functional as F
 import torch.optim as optim
 import torch.nn as nn
 import torch
@@ -49,7 +50,7 @@ if __name__ == "__main__":
     classModel = model_trainer.ClassificationNet()
 
     classModel.optimizer = optim.Adam(classModel.parameters(), lr=p.CLASS_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.CLASS_weightdecay, amsgrad=False)
-    classModel.criterion = nn.CrossEntropyLoss()
+    classModel.criterion = F.nll_loss
 
     # initialize summary writer
     os.system("rm -rd {}".format(args.log_dir))

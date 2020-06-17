@@ -22,7 +22,6 @@ class Net(nn.Module):
         self.lin2 = nn.Linear(128, 2)
 
         self.relu = nn.ReLU()
-        self.soft = nn.Softmax()
 
     def forward(self, audioX, visionX):
         x = torch.cat((self.audioNet.forward(audioX.float()), self.visionNet.forward(visionX.float())), 1)
@@ -30,7 +29,7 @@ class Net(nn.Module):
         x = self.relu(x)
         x = self.lin2(x)
 
-        return self.soft(x)
+        return F.log_softmax(x, dim=1)
 
 
 def avcNet_generator(optimizer = None, criterion = None):
