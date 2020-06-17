@@ -44,8 +44,11 @@ def train(audio, video, label, model):
 
     audio, video, label = audio.to("cuda"), video.to("cuda"), label.to("cuda")
     model.optimizer.zero_grad()
-    output = model.forward(audio, video)
 
+    # Get audio & video embeddings
+
+    output = model.forward(audio, video)
+    
     # remove one hot encodind
     label = torch.max(label, 1)[1]
 
