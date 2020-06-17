@@ -28,7 +28,7 @@ class ClassificationNet(nn.Module):
         x = self.relu(x)
         x = self.lin2(x)
 
-        return self.soft(x)
+        return F.log_softmax(x, dim=1)
 
 def train(audio, label, model):
     model.train()
