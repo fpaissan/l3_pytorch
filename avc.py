@@ -13,6 +13,7 @@ import torch
 
 from tqdm import tqdm
 import numpy as np
+import datetime
 import argparse
 import random
 import pickle
@@ -39,7 +40,7 @@ def parse_arguments():
                         action='store',
                         type=str,
                         help='Path to directory where data files are stored',
-                        default = "/home/gcerutti/workspace/runs/")
+                        default = "/home/gcerutti/workspace/runs_AVC/")
     parser.add_argument('--ckp-dir',
                         action='store',
                         type=str,
@@ -54,8 +55,10 @@ def parse_arguments():
 
 if __name__ == "__main__":
   args = parse_arguments()
-  id_log = str(int(time.time()))
-  # create train_dir and test_dir variables
+
+  # year-month-day-hour-minute-second
+  id_log = str(datetime.datetime.now()).split('.')[0].replace(" ", "-")  # create train_dir and test_dir variables
+  
   train_dir = os.path.join(args.data_dir, 'train')
   test_dir = os.path.join(args.data_dir, 'test')
   os.makedirs(args.ckp_dir, exist_ok = True)
@@ -69,11 +72,11 @@ if __name__ == "__main__":
 
   # initialize summary writer
   os.system("rm -rd {}".format(args.log_dir))
-  writer = SummaryWriter(args.log_dir)
+  writer = SummaryWriter(args.log_dir, filename_suffix=id_log + "_AVC")
 
   # list with batches
-  train_dataloader = DataLoader(VGGSound_Dataset(train_dir), batch_size = args.batch_size, shuffle=True, num_workers=4)
-  test_dataloader = DataLoader(VGGSound_Dataset(test_dir), batch_size = args.batch_size, shuffle=True, num_workers=4)
+  train_dataloader = DataLoader(VGGSound_Dataset(train_dir), batch_size = args.batch_size, shuffle=True, num_workers=20)
+  test_dataloader = DataLoader(VGGSound_Dataset(test_dir), batch_size = args.batch_size, shuffle=True, num_workers=20)
   best_loss = np.inf
 
 
@@ -86,8 +89,8 @@ if __name__ == "__main__":
       loss_batch, acc_batch = model_trainer.train(audio, video, label, model)
       loss.append(loss_batch)
       acc.append(acc_batch)
-    writer.add_scalar('Loss/train_{}'.format(id_log), sum(loss)/len(loss), e)
-    writer.add_scalar('Acc/train_{}'.format(id_log), sum(acc)/len(acc), e)
+    writer.add_scalar('AVC_Loss/train_{}'.format(id_log), sum(loss)/len(loss), e)
+    writer.add_scalar('AVC_Acc/train_{}'.format(id_log), sum(acc)/len(acc), e)
     
     loss, acc = list(), list()    
     for batch in tqdm(test_dataloader):
@@ -101,8 +104,8 @@ if __name__ == "__main__":
       print("INFO: saving checkpoint!")
       best_loss = test_loss
       torch.save(model.state_dict(), os.path.join(args.ckp_dir, '{}_AVC_best_val.ckp'.format(id_log)))
-    writer.add_scalar('Loss/test_{}'.format(id_log), sum(loss)/len(loss), e)
-    writer.add_scalar('Acc/test_{}'.format(id_log), sum(acc)/len(acc), e)
+    writer.add_scalar('AVC_Loss/test_{}'.format(id_log), sum(loss)/len(loss), e)
+    writer.add_scalar('AVC_Acc/test_{}'.format(id_log), sum(acc)/len(acc), e)
 
 
 

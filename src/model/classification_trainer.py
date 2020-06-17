@@ -14,7 +14,7 @@ class ClassificationNet(nn.Module):
         self.optimizer = optimizer
         self.criterion = criterion
 
-        # self.lin0 = nn.Linear(512, 512)
+        self.lin0 = nn.Linear(512, 512)
         self.lin1 = nn.Linear(512, 128)
         self.lin2 = nn.Linear(128, par.NUM_CLASSES['esc50'])
 
@@ -22,8 +22,8 @@ class ClassificationNet(nn.Module):
         self.soft = nn.Softmax()
 
     def forward(self, x):
-        # x = self.lin0(x)
-        # x = self.relu(x)
+        x = self.lin0(x)
+        x = self.relu(x)
         x = self.lin1(x)
         x = self.relu(x)
         x = self.lin2(x)
