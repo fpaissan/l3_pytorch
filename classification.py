@@ -48,12 +48,6 @@ if __name__ == "__main__":
 
     # year-month-day-hour-minute-second
     id_log = str(datetime.datetime.now()).split('.')[0].replace(" ", "-")  # create train_dir and test_dir variables
-    
-    # Create classification model
-    classModel = model_trainer.ClassificationNet()
-
-    classModel.optimizer = optim.Adam(classModel.parameters(), lr=p.CLASS_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.CLASS_weightdecay, amsgrad=False)
-    classModel.criterion = F.nll_loss
 
     # initialize summary writer
     os.system("rm -rd {}".format(args.log_dir))
@@ -61,16 +55,21 @@ if __name__ == "__main__":
 
     # Extract train/test/val folds
     fold_idx = [0, 1, 2, 3, 4]
-    for i in fold_idx:
-        test_dataloader = DataLoader(ESC50_Dataset(args.data_dir, i), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
-        val_dataloader = DataLoader(ESC50_Dataset(args.data_dir, (i + 1) % len(fold_idx)), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
-        train_idx = list(set(fold_idx) - set([i, (i + 1) % len(fold_idx)]))
+    for fold in fold_idx:
+        classModel = model_trainer.ClassificationNet()
+
+        classModel.optimizer = optim.Adam(classModel.parameters(), lr=p.CLASS_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.CLASS_weightdecay, amsgrad=False)
+        classModel.criterion = F.nll_loss
+
+        test_dataloader = DataLoader(ESC50_Dataset(args.data_dir, fold), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
+        val_dataloader = DataLoader(ESC50_Dataset(args.data_dir, (fold + 1) % len(fold_idx)), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
+        train_idx = list(set(fold_idx) - set([fold, (fold + 1) % len(fold_idx)]))
         train_dataloaders = [DataLoader(ESC50_Dataset(args.data_dir, train_idx[0]), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers),
                             DataLoader(ESC50_Dataset(args.data_dir, train_idx[1]), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers),
                             DataLoader(ESC50_Dataset(args.data_dir, train_idx[2]), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)]
 
         best_loss = np.inf
-        for e in range(p.AVC_epochs):
+        for e in range(p.CLASS_epochs):
             print("INFO: epoch {} of {}".format(e + 1, p.CLASS_epochs))
 
             for train_loader in train_dataloaders:
@@ -82,8 +81,8 @@ if __name__ == "__main__":
                     loss.append(loss_batch)
                     acc.append(acc_batch)
                 
-            writer.add_scalar('Loss/train_{}'.format(id_log), sum(loss)/len(loss), e)
-            writer.add_scalar('Acc/train_{}'.format(id_log), sum(acc)/len(acc), e)
+            writer.add_scalar('Loss_{}/train_{}'.format(fold, id_log), sum(loss)/len(loss), e)
+            writer.add_scalar('Acc_{}/train_{}'.format(fold, id_log), sum(acc)/len(acc), e)
             
             loss, acc = list(), list()    
             for batch in tqdm(val_dataloader):
@@ -96,7 +95,7 @@ if __name__ == "__main__":
             if val_loss < best_loss:
                print("INFO: saving checkpoint!")
                best_loss = val_loss
-               torch.save(classModel.state_dict(), os.path.join(args.ckp_dir, 'CLASSIFICATION_best_val.ckp'))
+               torch.save(classModel.state_dict(), os.path.join(args.ckp_dir, 'CLASSIFICATION_best_val_{}.ckp'.format(fold)))
 
-            writer.add_scalar('Loss/test_{}'.format(id_log), sum(loss)/len(loss), e)
-            writer.add_scalar('Acc/test_{}'.format(id_log), sum(acc)/len(acc), e)
+            writer.add_scalar('Loss_{}/test_{}'.format(fold, id_log), sum(loss)/len(loss), e)
+            writer.add_scalar('Acc_{}/test_{}'.format(fold, id_log), sum(acc)/len(acc), e)
