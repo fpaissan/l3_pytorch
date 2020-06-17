@@ -58,7 +58,7 @@ if __name__ == "__main__":
     writer = SummaryWriter(args.log_dir)
 
     # Extract train/test/val folds
-    fold_idx = [1, 2, 3, 4, 5]
+    fold_idx = [0, 1, 2, 3, 4]
     for i in fold_idx:
         test_dataloader = DataLoader(ESC50_Dataset(args.data_dir, i), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
         val_dataloader = DataLoader(ESC50_Dataset(args.data_dir, (i + 1) % len(fold_idx)), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
