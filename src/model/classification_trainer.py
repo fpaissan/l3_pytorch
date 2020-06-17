@@ -19,7 +19,6 @@ class ClassificationNet(nn.Module):
         self.lin2 = nn.Linear(128, par.NUM_CLASSES['esc50'])
 
         self.relu = nn.ReLU()
-        self.soft = nn.Softmax()
 
     def forward(self, x):
         x = self.lin0(x)
