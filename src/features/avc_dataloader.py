@@ -53,13 +53,14 @@ class VGGSound_Dataset(Dataset):
 
       return (spectrogram, frame, np.asarray([i % 2, 1 - (i % 2)]))
 
-if __name__ == "__main__":
-  train_set = VGGSound_Dataset("/media/fpaissan/DATA/Dataset/VGGSound/Split/train/")
-  example = train_set[1]  
-  print("{} {} {}".format(example[0].shape, example[1].shape, example[2].shape))
+# if __name__ == "__main__":
+#   train_set = VGGSound_Dataset("/scratch/gcerutti/VGGsound/data/Split/train/")
+#   example = train_set[1]  
+#   print("{} {} {}".format(example[0].shape, example[1].shape, example[2].shape))
 
-  dataloader = DataLoader(train_set, batch_size = 4, shuffle = True, num_workers = 1)
+#   dataloader = DataLoader(train_set, batch_size = 4, shuffle = True, num_workers = 1)
 
-  for i_batch, batch in enumerate(dataloader):
-    example = batch
-    print("{} {} {}".format(example[0].shape, example[1].shape, example[2].shape))
+#   for i_batch, batch in enumerate(dataloader):
+#     example = batch
+#     print("{} {} {}".format(example[0].shape, example[1].shape, example[2].shape))
+#   # playing with a dataloader
