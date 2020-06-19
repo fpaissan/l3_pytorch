@@ -59,8 +59,8 @@ if __name__ == "__main__":
   # year-month-day-hour-minute-second
   id_log = str(datetime.datetime.now()).split('.')[0].replace(" ", "-")  # create train_dir and test_dir variables
   
-  train_dir = os.path.join(args.data_dir, 'train')
-  test_dir = os.path.join(args.data_dir, 'test')
+  train_dir = os.path.join(args.data_dir, 'train/*')
+  test_dir = os.path.join(args.data_dir, 'test/*')
   os.makedirs(args.ckp_dir, exist_ok = True)
 
   # initialize optimizer 

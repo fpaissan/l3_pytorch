@@ -41,14 +41,18 @@ def audio_feat(audio, sr):
 
 def get_frame(video_path):
     cap = cv2.VideoCapture(video_path)
-    ret, frame = cap.read()
+    video = np.zeros((10,1,224,224), dtype = np.float)    
+    for i in range(10):
+      ret, frame = cap.read()
+      if(ret):
+          frame = cv2.resize(frame, (224,224), interpolation = cv2.INTER_AREA)
+          frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)/255
+          video[i,0,:,:] = frame
+      else:
+          print("ERROR: -1 in the get frame function, file {}".format(video_path))
+          return 0, -1
     
-    if(ret):
-        frame = cv2.resize(frame, (224,224), interpolation = cv2.INTER_AREA)
-        return np.moveaxis(frame, -1, 0)/255, 0
-    else:
-        print("ERROR: -1 in the get frame function, file {}".format(video_path))
-        return 0, -1
+    return video, 0
 
 def get_spectrogram(audioSignal, sr, axis = 0):
     if sr != 48000:
