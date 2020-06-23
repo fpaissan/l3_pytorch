@@ -41,17 +41,18 @@ def audio_feat(audio, sr):
 
 def get_frame(video_path):
     cap = cv2.VideoCapture(video_path)
-    video = np.zeros((10,1,224,224), dtype = np.float)    
+    video = np.zeros((10,1,224,224), dtype = np.uint8)    
     for i in range(10):
       ret, frame = cap.read()
       if(ret):
           frame = cv2.resize(frame, (224,224), interpolation = cv2.INTER_AREA)
-          frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)/255
+          frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
           video[i,0,:,:] = frame
       else:
           print("ERROR: -1 in the get frame function, file {}".format(video_path))
+          cap.release()
           return 0, -1
-    
+    cap.release()
     return video, 0
 
 def get_spectrogram(audioSignal, sr, axis = 0):
@@ -70,4 +71,6 @@ def get_spectrogram(audioSignal, sr, axis = 0):
 
     spec = stft_magnitude(audioSignal, par.AUDIO_n_dft, par.AUDIO_n_hop, par.AUDIO_n_dft)
     spec = np.log(np.clip(spec, 1e-12, None) / par.DUMMY_PARAMETER).T
+    spec = spec.astype(np.float32)
+    
     return np.expand_dims(spec, axis=0)

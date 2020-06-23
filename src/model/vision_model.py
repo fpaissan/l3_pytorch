@@ -12,7 +12,7 @@ class Net(nn.Module):
         self.optimizer = optimizer
         self.criterion = criterion
 
-        self.conv1 = nn.Conv2d(3, par.VIDEO_channels[0], kernel_size=3, stride=1, padding=1)
+        self.conv1 = nn.Conv2d(1, par.VIDEO_channels[0], kernel_size=3, stride=1, padding=1)
         self.conv1_bn = nn.BatchNorm2d(par.VIDEO_channels[0], eps=0.001, momentum=0.99)    #Eps and momentum from keras default
         if par.double_convolution:
           self.conv1B = nn.Conv2d(par.VIDEO_channels[0], par.VIDEO_channels[0], kernel_size=3, stride=1, padding=1)

@@ -20,7 +20,7 @@ class VGGSound_Dataset(Dataset):
       with open(self.file_list[i], 'rb') as f:
             spectrogram, frame, label = pickle.load(f)
 
-      return (spectrogram, frame[0], label)
+      return (spectrogram, frame[0]/255, label)
 
 if __name__ == "__main__":
   train_set = VGGSound_Dataset("/media/fpaissan/DATA/Dataset/VGGSound/processed/train/*")
