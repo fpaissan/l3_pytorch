@@ -11,10 +11,11 @@ import torch
 import torch.nn.functional as F
 
 class Net(nn.Module):
-    def __init__(self, audioNet, visionNet, optimizer = None, criterion = None):
+    def __init__(self, audioNet, visionNet, optimizer = None, criterion = None, scheduler = None):
         super(Net, self).__init__()
         self.optimizer = optimizer
         self.criterion = criterion
+        self.scheduler = scheduler
 
         self.visionNet = visionNet
         self.audioNet = audioNet

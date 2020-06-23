@@ -12,7 +12,7 @@ class Net(nn.Module):
         self.optimizer = optimizer
         self.criterion = criterion
 
-        self.conv1 = nn.Conv2d(1, par.AUDIO_channels[0], kernel_size=3, stride=1, padding=1)
+        self.conv1 = nn.Conv2d(1, par.AUDIO_channels[0], kernel_size=3, stride=2, padding=1)
         self.conv1_bn = nn.BatchNorm2d(par.AUDIO_channels[0], eps=0.001, momentum=0.99)    #Eps and momentum from keras default
         if par.double_convolution:
           self.conv1B = nn.Conv2d(par.AUDIO_channels[0], par.AUDIO_channels[0], kernel_size=3, stride=1, padding=1)
@@ -35,7 +35,7 @@ class Net(nn.Module):
         if par.double_convolution:
           self.conv4B = nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1)
           self.conv4B_bn = nn.BatchNorm2d(512, eps=0.001, momentum=0.99)    #Eps and momentum from keras default         
-        self.maxpool_4 = nn.MaxPool2d(kernel_size=(32, 24), stride=None)
+        self.maxpool_4 = nn.MaxPool2d(kernel_size=(16, 12), stride=None)
         
         self.maxpool = nn.MaxPool2d(2, stride=2, padding=0)
         self.relu = nn.ReLU()
