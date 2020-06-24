@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import soundfile as sf
 import numpy as np
 import librosa
+import openl3
 import cv2
 
 def frame(data, window_length, hop_length):
@@ -27,17 +28,21 @@ def stft_magnitude(signal, fft_length,
 
   return np.abs(np.fft.rfft(windowed_frames, int(fft_length)))
 
-def audio_feat(audio, sr):
-  hop_length = int(par.ESC_hopsize * sr)
-  frame_length = sr
+def audio_feat(audio, sr, openl3=False):
+  if(not openl3):
+    hop_length = int(par.ESC_hopsize * sr)
+    frame_length = sr
 
-  x = librosa.util.utils.frame(audio, frame_length=frame_length, hop_length=hop_length).T # Audio frames
-  
-  specs = list()
-  for frame in x:
-      specs.append(get_spectrogram(frame, sr, axis = 1))
+    x = librosa.util.utils.frame(audio, frame_length=frame_length, hop_length=hop_length).T # Audio frames
+    
+    specs = list()
+    for frame in x:
+        specs.append(get_spectrogram(frame, sr, axis = 1))
 
-  return np.asarray(specs, np.double) # Maybe add a dimension
+    return np.asarray(specs, np.double) # Maybe add a dimension
+  else:
+    emb, ts = openl3.get_audio_embedding(audio, sr, embedding_size=512)
+    input(emb.shape)
 
 def get_frame(video_path):
     ret = False

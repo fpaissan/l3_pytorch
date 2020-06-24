@@ -65,7 +65,7 @@ def extract_features(model, data_dir, output_dir, limit = -1):
         audioSignal = audioSignal.mean(axis=-1).astype('int16')
         audioSignal = resampy.resample(audioSignal, sr, 48000)
         
-        spectrograms = audio_feat(audioSignal, 48000)
+        spectrograms = audio_feat(audioSignal, 48000, openl3=True)
 
         spectrograms = torch.from_numpy(spectrograms)
         spectrograms = spectrograms.to("cuda")
