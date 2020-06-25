@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import soundfile as sf
 import numpy as np
 import librosa
-import openl3
 import cv2
 
 def frame(data, window_length, hop_length):
@@ -41,6 +40,7 @@ def audio_feat(audio, sr, openl3=False):
 
     return np.asarray(specs, np.double) # Maybe add a dimension
   else:
+    import openl3
     emb, ts = openl3.get_audio_embedding(audio, sr, embedding_size=512)
     input(emb.shape)
 
@@ -48,19 +48,20 @@ def get_frame(video_path):
     ret = False
     while(ret == False):
       cap = cv2.VideoCapture(video_path)
-      video = np.zeros((10,1,224,224), dtype = np.uint8)    
-      for i in range(10):
-        ret, frame = cap.read()
-        if(ret):
-            frame = cv2.resize(frame, (224,224), interpolation = cv2.INTER_AREA)
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            video[i,0,:,:] = frame
-        else:
-            print("ERROR: -1 in the get frame function, frame index {} file {}".format(i, video_path))
-            cap.release()
-            break
+      # video = list()
+      # video = np.zeros((10,3,224,224), dtype = np.uint8)    
+      ret, frame = cap.read()
+      if(ret):
+          a = 256/np.min(frame.shape[:-1])
+          new_shape = int(frame.shape[0]*a), int(frame.shape[1]*a)
+          frame = cv2.resize(frame, new_shape, interpolation = cv2.INTER_AREA)
+          # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+      else:
+          print("ERROR: -1 in the get frame function, frame index {} file {}".format(i, video_path))
+          cap.release()
+          # break
     cap.release()
-    return video, 0
+    return frame, 0
 
 
 def get_spectrogram(audioSignal, sr, axis = 0):

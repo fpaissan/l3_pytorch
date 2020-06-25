@@ -41,8 +41,6 @@ def avcNet_generator(optimizer = None, criterion = None):
 
 def train(audio, video, label, model):
     model.train()
-    model.cuda()
-
     audio, video, label = audio.to("cuda"), video.to("cuda"), label.to("cuda")
     model.optimizer.zero_grad()
     output = model.forward(audio, video)
@@ -60,7 +58,6 @@ def train(audio, video, label, model):
 
 def test(audio, video, label, model):
     model.eval() # chech with batch normalization
-    model.cuda()
     audio, video, label = audio.to("cuda"), video.to("cuda"), label.to("cuda")
     output = model.forward(audio, video)
 

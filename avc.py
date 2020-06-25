@@ -65,6 +65,8 @@ if __name__ == "__main__":
 
   # initialize optimizer 
   model = avcNet_generator()
+  model.cuda()
+
   print(model)
   
   model.optimizer = optim.Adam(model.parameters(), lr=p.AVC_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.AVC_weightdecay, amsgrad=False)
@@ -76,8 +78,8 @@ if __name__ == "__main__":
   writer = SummaryWriter(args.log_dir, filename_suffix=id_log + "_AVC")
 
   # list with batches
-  train_dataloader = DataLoader(VGGSound_Dataset(train_dir), batch_size = args.batch_size, shuffle=True, num_workers=20)
-  test_dataloader = DataLoader(VGGSound_Dataset(test_dir), batch_size = args.batch_size, shuffle=True, num_workers=20)
+  train_dataloader = DataLoader(VGGSound_Dataset(train_dir, transform=True), batch_size = args.batch_size, shuffle=True, num_workers=20)
+  test_dataloader = DataLoader(VGGSound_Dataset(test_dir, transform=True), batch_size = args.batch_size, shuffle=True, num_workers=20)
   best_loss = np.inf
 
 

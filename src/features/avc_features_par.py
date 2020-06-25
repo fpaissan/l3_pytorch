@@ -26,7 +26,7 @@ def parse_arguments():
     return parser.parse_args()
 
 def extract_features(data_dir, output_dir, file_list, i):
-    
+    print(file_list[i])
     if(i % 2 == 0): #Save label 1
         audio_path = os.path.join(data_dir, 'audio', file_list[i] + '.flac')
         video_path = os.path.join(data_dir, 'video', file_list[i] + '.mp4')        
