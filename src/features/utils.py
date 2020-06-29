@@ -28,8 +28,8 @@ def stft_magnitude(signal, fft_length,
 
   return np.abs(np.fft.rfft(windowed_frames, int(fft_length)))
 
-def audio_feat(audio, sr, openl3=False):
-  if(not openl3):
+def audio_feat(audio, sr, is_openl3=False):
+  if(not is_openl3):
     hop_length = int(par.ESC_hopsize * sr)
     frame_length = sr
 
@@ -39,10 +39,10 @@ def audio_feat(audio, sr, openl3=False):
     for frame in x:
         specs.append(get_spectrogram(frame, sr, axis = 1))
 
-    return np.asarray(specs, np.double) # Maybe add a dimension
+    return np.asarray(specs, np.float32) # Maybe add a dimension
   else:
-    emb, ts = openl3.get_audio_embedding(audio, sr, embedding_size=512)
-    input(emb.shape)
+    emb, ts = openl3.get_audio_embedding(audio, sr, batch_size = 46, hop_size = par.ESC_hopsize, embedding_size=512)
+    return emb.astype(np.float32)
 
 def get_frame(video_path):
     ret = False
