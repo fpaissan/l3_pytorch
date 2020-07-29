@@ -15,6 +15,11 @@ import gzip
 import sys
 import os
 
+import tensorflow as tf
+TF_CONFIG_ = tf.ConfigProto()
+TF_CONFIG_.gpu_options.allow_growth = True
+sess = tf.Session(config = TF_CONFIG_)
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Moves data from a single folder to train test folder')

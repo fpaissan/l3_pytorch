@@ -41,15 +41,14 @@ def audio_feat(audio, sr, is_openl3=False):
     return np.asarray(specs, np.float32) # Maybe add a dimension
   else:
     import openl3
-    emb, ts = openl3.get_audio_embedding(audio, sr, embedding_size=512)
-    input(emb.shape)
+    emb, ts = openl3.get_audio_embedding(audio, sr, input_repr="mel128", embedding_size=512, batch_size = 1)
 
 def get_frame(video_path):
     ret = False
     while(ret == False):
       cap = cv2.VideoCapture(video_path)
       # video = list()
-      # video = np.zeros((10,3,224,224), dtype = np.uint8)    
+      # video = np.zeros((10,3,224,224), dtype = np.uint8)
       ret, frame = cap.read()
       if(ret):
           a = 256/np.min(frame.shape[:-1])
