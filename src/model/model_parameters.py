@@ -33,4 +33,4 @@ NUM_CLASSES = {'esc50': 50}
 CLASS_lr = 1e-4
 CLASS_weightdecay = 1e-5
 CLASS_epochs = 2000
-ESC_numWorkers = 20
+ESC_numWorkers = 10

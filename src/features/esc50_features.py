@@ -89,8 +89,9 @@ def extract_features(model, data_dir, output_dir, limit = -1, is_openl3 = False)
 
     for fold in range(5):   #iterate in folds
         spectrograms_openL3 = audio_feat(audioSignal_folds[str(fold)], 48000, is_openl3=is_openl3)
-        with open(os.path.join(output_dir, 'fold' + str(fold), basename + '.pkl'), 'wb') as f:
-            pickle.dump((spectrograms_openL3, classLabel_folds[str(fold)]), f)
+        for x, sample in enumerate(spectrograms_openL3):
+            with open(os.path.join(output_dir, 'fold' + str(fold), x + '.pkl'), 'wb') as f:
+                pickle.dump((sample, classLabel_folds[str(fold)][x]), f)
 
 if __name__ == "__main__":
     args = parse_arguments()
