@@ -54,14 +54,20 @@ def extract_features(model, data_dir, output_dir, limit = -1, is_openl3 = False)
 
     if limit == -1:
         limit = len(file_list)
+    audioSignal_append = []
+    classLabel_append = []
     for i in tqdm(range(len(file_list))):
+
         audio_path = os.path.join(data_dir, file_list[i])
 
         audioSignal, sr = sf.read(audio_path, dtype='int16', always_2d=True)
         audioSignal = audioSignal.mean(axis=-1).astype('int16')
         audioSignal = resampy.resample(audioSignal, sr, 48000)
-        
-        spectrograms = audio_feat(audioSignal, 48000, is_openl3=is_openl3)
+
+        if(not is_openl3):
+            spectrograms = audio_feat(audioSignal, 48000, is_openl3=is_openl3)
+        else:
+            audioSignal_append.append(audioSignal)  # Creating audio list to avoid GPU memory overflow while inferencing
 
         if(not is_openl3):
             spectrograms = torch.from_numpy(spectrograms)
@@ -75,8 +81,16 @@ def extract_features(model, data_dir, output_dir, limit = -1, is_openl3 = False)
         basename = file_list[i].split('.')[0]
         class_label = int(basename.split('-')[-1])
 
-        with open(os.path.join(output_dir, 'fold' + basename.split('-')[0], basename + '.pkl'), 'wb') as f:
-            pickle.dump((features, class_label), f)
+        if(not is_openl3):
+            with open(os.path.join(output_dir, 'fold' + basename.split('-')[0], basename + '.pkl'), 'wb') as f:
+                pickle.dump((features, class_label), f)
+
+        if(is_openl3):
+            classLabel_append.append(class_label)
+
+    spectrograms_openL3 = audio_feat(audioSignal_append, 48000, is_openl3=is_openl3)
+    with open(os.path.join(output_dir, 'fold' + basename.split('-')[0], basename + '.pkl'), 'wb') as f:
+        pickle.dump((spectrograms_openL3, classLabel_append), f)
 
 if __name__ == "__main__":
     args = parse_arguments()

@@ -43,6 +43,8 @@ def audio_feat(audio, sr, is_openl3=False):
     import openl3
     emb, ts = openl3.get_audio_embedding(audio, sr, input_repr="mel128", embedding_size=512, batch_size = 1)
 
+    return emb
+
 def get_frame(video_path):
     ret = False
     while(ret == False):
