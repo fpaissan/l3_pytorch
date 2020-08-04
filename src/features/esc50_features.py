@@ -75,8 +75,6 @@ def extract_features(model, data_dir, output_dir, limit = -1, is_openl3 = False)
         
             features = model.forward(spectrograms)
             features = features.cpu().numpy()
-        else:
-            features = spectrograms
 
         basename = file_list[i].split('.')[0]
         class_label = int(basename.split('-')[-1])
