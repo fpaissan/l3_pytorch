@@ -54,8 +54,9 @@ def extract_features(model, data_dir, output_dir, limit = -1, is_openl3 = False)
 
     if limit == -1:
         limit = len(file_list)
-    audioSignal_append = []
-    classLabel_append = []
+
+    audioSignal_folds = {'1': [], '2': [], '3': [], '4': [], '5': []}
+    classLabel_folds = {'1': [], '2': [], '3': [], '4': [], '5': []}
     for i in tqdm(range(len(file_list))):
 
         audio_path = os.path.join(data_dir, file_list[i])
@@ -66,17 +67,13 @@ def extract_features(model, data_dir, output_dir, limit = -1, is_openl3 = False)
 
         if(not is_openl3):
             spectrograms = audio_feat(audioSignal, 48000, is_openl3=is_openl3)
-        else:
-            audioSignal_append.append(audioSignal)  # Creating audio list to avoid GPU memory overflow while inferencing
 
         if(not is_openl3):
             spectrograms = torch.from_numpy(spectrograms)
             spectrograms = spectrograms.to("cuda")
-        
+
             features = model.forward(spectrograms)
             features = features.cpu().numpy()
-        else:
-            features = spectrograms
 
         basename = file_list[i].split('.')[0]
         class_label = int(basename.split('-')[-1])
@@ -86,11 +83,14 @@ def extract_features(model, data_dir, output_dir, limit = -1, is_openl3 = False)
                 pickle.dump((features, class_label), f)
 
         if(is_openl3):
-            classLabel_append.append(class_label)
+            # Creating audio list to avoid GPU memory overflow while inferencing
+            audioSignal_folds[basename.split('-')[0]].append(audioSignal)
+            classLabel_folds[basename.split('-')[0]].append(class_label)
 
-    spectrograms_openL3 = audio_feat(audioSignal_append, 48000, is_openl3=is_openl3)
-    with open(os.path.join(output_dir, 'fold' + basename.split('-')[0], basename + '.pkl'), 'wb') as f:
-        pickle.dump((spectrograms_openL3, classLabel_append), f)
+    for fold in range(5):   #iterate in folds
+        spectrograms_openL3 = audio_feat(audioSignal_folds[str(fold)], 48000, is_openl3=is_openl3)
+        with open(os.path.join(output_dir, 'fold' + str(fold), basename + '.pkl'), 'wb') as f:
+            pickle.dump((spectrograms_openL3, classLabel_folds[str(fold)]), f)
 
 if __name__ == "__main__":
     args = parse_arguments()
