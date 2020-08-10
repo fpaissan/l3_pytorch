@@ -41,7 +41,7 @@ def train(audio, label, model):
     pred = pred.to("cuda")
     for i in range(audio.shape[0]):
         sample_out = model.forward(audio[i])
-        sample_out = torch.mean(sample_out, dim=0)
+        sample_out = torch.sum(sample_out, dim=0)
         pred[i] = sample_out
 
     # label = torch.max(label, 1)[1]   #Remove one hot encoding  
