@@ -11,6 +11,8 @@ import gzip
 import sys
 import os
 
+import glob
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Moves data from a single folder to train test folder')
     parser.add_argument('--data-dir',
@@ -26,8 +28,8 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def extract_features(model, data_dir, output_dir, limit=-1, is_openl3=False):
-    file_list = os.listdir(data_dir)
+def extract_scalers(data_dir, output_dir, limit=-1):
+    file_list = glob.glob(data_dir)
 
     feat_list = list()
     for i in tqdm(range(len(file_list))):
@@ -77,4 +79,4 @@ if __name__ == "__main__":
     args = parse_arguments()
 
     for i in range(5):
-        extract_scalers(avcModel, args.data_dir + '/fold{}'.format(i + 1), args.output_dir, limit=feat_p.ESC_limit, is_openl3=is_openl3)
+        extract_scalers(args.data_dir + '/fold{}/*'.format(i + 1), args.output_dir, limit=feat_p.ESC_limit)
