@@ -11,7 +11,8 @@ class ESC50_Dataset(Dataset):
     """VGGSound dataset."""
     def __init__(self, data_dir, fold_idx):
         self.file_list = glob.glob(os.path.join(data_dir,"fold{}/*".format(fold_idx + 1)))
-
+        with open(os.path.join(data_dir, 'scalers.pkl'), 'rb') as fp:
+            self.minmaxScaler, self.stdScaler = pickle.load(fp) 
     def __len__(self):          
         return len(self.file_list)
     
@@ -19,7 +20,7 @@ class ESC50_Dataset(Dataset):
         with open(self.file_list[i],'rb') as f:
             embedding, label = pickle.load(f)
         
-        return (embedding, label)
+        return (self.stdScaler.transform(self.minmaxScaler.transform(embedding)), label)
 
 if __name__ == "__main__":
     train_set = ESC50_Dataset("/scratch/gcerutti/ESC-50/processed",1)

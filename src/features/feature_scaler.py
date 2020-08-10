@@ -10,6 +10,7 @@ import argparse
 import pickle
 
 import glob
+import os
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Moves data from a single folder to train test folder')
@@ -36,7 +37,8 @@ def extract_scalers(data_dir, output_dir, limit=-1):
         feat_list.append(features)
 
     feat_array = np.asarray(feat_list)
-
+    feat_array = feat_array.reshape((-1, 512)) 
+    print(feat_array.shape)
     minmaxScaler = MinMaxScaler()
     stdScaler = StandardScaler()
 
