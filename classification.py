@@ -20,6 +20,8 @@ import random
 import time
 import os
 
+# CUDA_VISIBLE_DEVICES=3 python3.6 classification.py --data-dir /scratch/gcerutti/VGGsound/data/open_l3
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Moves data from a single folder to train test folder')
     parser.add_argument('--data-dir',

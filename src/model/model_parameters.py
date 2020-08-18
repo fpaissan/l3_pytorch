@@ -31,6 +31,6 @@ AVC_epochs = 150
 #Classification parameters
 NUM_CLASSES = {'esc50': 50}
 CLASS_lr = 1e-4
-CLASS_weightdecay = 1e-4 
+CLASS_weightdecay = 1e-2
 CLASS_epochs = 300
 ESC_numWorkers = 10
