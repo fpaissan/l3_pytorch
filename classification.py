@@ -56,6 +56,7 @@ if __name__ == "__main__":
     writer = SummaryWriter(args.log_dir)
 
     # Extract train/test/val folds
+    test_acc = list()
     fold_idx = [0, 1, 2, 3, 4]
     for fold in fold_idx:
         classModel = model_trainer.ClassificationNet()
@@ -101,3 +102,14 @@ if __name__ == "__main__":
 
             writer.add_scalar('Loss_{}/test_{}'.format(fold, id_log), sum(loss)/len(loss), e)
             writer.add_scalar('Acc_{}/test_{}'.format(fold, id_log), sum(acc)/len(acc), e)
+
+        for batch in tqdm(test_dataloader):
+            embedding, label = batch
+            loss_batch, acc_batch = model_trainer.train(embedding, label, classModel)
+            loss.append(loss_batch)
+            acc.append(acc_batch)
+
+        test_acc.append(sum(acc) / len(acc))
+
+    print("[INFO] Test accuracy vector: {}".format(test_acc))
+    print("[INFO] Average test accuracy is {}".format(sum(test_acc) / len(test_acc)))
