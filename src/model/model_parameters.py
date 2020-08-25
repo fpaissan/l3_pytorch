@@ -34,3 +34,4 @@ CLASS_lr = 1e-4
 CLASS_weightdecay = 1e-2
 CLASS_epochs = 300
 ESC_numWorkers = 10
+CLASS_VALRATE = 0.15

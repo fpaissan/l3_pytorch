@@ -4,8 +4,8 @@ from src.model.avc_trainer import avcNet_generator
 import src.model.model_parameters as p
 import argparse
 
+from torch.utils.data import DataLoader, random_split
 from torch.utils.tensorboard import SummaryWriter
-from torch.utils.data import DataLoader
 import torch.nn.functional as F
 
 import torch.optim as optim
@@ -64,25 +64,25 @@ if __name__ == "__main__":
         classModel.optimizer = optim.Adam(classModel.parameters(), lr=p.CLASS_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.CLASS_weightdecay, amsgrad=False)
         classModel.criterion = F.nll_loss
 
-        test_dataloader = DataLoader(ESC50_Dataset(args.data_dir, fold), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
-        val_dataloader = DataLoader(ESC50_Dataset(args.data_dir, (fold + 1) % len(fold_idx)), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
-        train_idx = list(set(fold_idx) - set([fold, (fold + 1) % len(fold_idx)]))
-        train_dataloaders = [DataLoader(ESC50_Dataset(args.data_dir, train_idx[0]), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers),
-                            DataLoader(ESC50_Dataset(args.data_dir, train_idx[1]), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers),
-                            DataLoader(ESC50_Dataset(args.data_dir, train_idx[2]), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)]
+        test_dataloader = DataLoader(ESC50_Dataset(args.data_dir, [fold]), batch_size = args.batch_size, shuffle = True, num_workers = p.ESC_numWorkers)
+        train_val_idx = list(set(fold_idx) - set([fold]))
+        esc50_dataset = ESC50_Dataset(args.data_dir, train_val_idx)
+        train_dataset, val_dataset = random_split(esc50_dataset, [int(np.floor((1 - p.CLASS_VALRATE) * len(esc50_dataset))), int(np.ceil(p.CLASS_VALRATE * len(esc50_dataset)))])
+        print("[INFO]: {} {} {}".format(len(esc50_dataset), len(train_dataset), len(val_dataset)))
+        train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=p.ESC_numWorkers)
+        val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True, num_workers=p.ESC_numWorkers)
 
         best_loss = np.inf
         for e in range(p.CLASS_epochs):
             print("INFO: epoch {} of {}".format(e + 1, p.CLASS_epochs))
 
-            for train_loader in train_dataloaders:
-                loss, acc = list(), list()
-                for batch in tqdm(train_loader):
-                    embedding, label = batch
+            loss, acc = list(), list()
+            for batch in tqdm(train_dataloader):
+                embedding, label = batch
 
-                    loss_batch, acc_batch = model_trainer.train(embedding, label, classModel)
-                    loss.append(loss_batch)
-                    acc.append(acc_batch)
+                loss_batch, acc_batch = model_trainer.train(embedding, label, classModel)
+                loss.append(loss_batch)
+                acc.append(acc_batch)
                 
             writer.add_scalar('Loss_{}/train_{}'.format(fold, id_log), sum(loss)/len(loss), e)
             writer.add_scalar('Acc_{}/train_{}'.format(fold, id_log), sum(acc)/len(acc), e)

@@ -10,9 +10,13 @@ import os
 class ESC50_Dataset(Dataset):
     """VGGSound dataset."""
     def __init__(self, data_dir, fold_idx):
-        self.file_list = glob.glob(os.path.join(data_dir,"fold{}/*".format(fold_idx + 1)))
+        self.file_list = []
+        for idx in fold_idx:
+            self.file_list += glob.glob(os.path.join(data_dir, "fold{}/*".format(idx + 1)))
+
         with open(os.path.join(data_dir, 'scalers.pkl'), 'rb') as fp:
-            self.minmaxScaler, self.stdScaler = pickle.load(fp) 
+            self.minmaxScaler, self.stdScaler = pickle.load(fp)
+
     def __len__(self):          
         return len(self.file_list)
     
