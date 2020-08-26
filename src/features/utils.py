@@ -32,6 +32,8 @@ def audio_feat(audio, sr, is_openl3=False):
     hop_length = int(par.ESC_hopsize * sr)
     frame_length = sr
 
+    audio = np.concatenate((np.zeros(shape=(0.5*sr)), audio), axis=0)
+
     x = librosa.util.utils.frame(audio, frame_length=frame_length, hop_length=hop_length).T # Audio frames
     
     specs = list()
