@@ -66,9 +66,8 @@ def extract_features(model, data_dir, output_dir, limit = -1, is_openl3 = False)
         audioSignal = resampy.resample(audioSignal, sr, 48000)
 
         if(not is_openl3):
-            spectrograms = audio_feat(audioSignal, 48000, is_openl3=is_openl3)
+            spectrograms = audio_feat(audioSignal, 48000)
 
-        if(not is_openl3):
             spectrograms = torch.from_numpy(spectrograms)
             spectrograms = spectrograms.to("cuda")
 
@@ -87,11 +86,12 @@ def extract_features(model, data_dir, output_dir, limit = -1, is_openl3 = False)
             audioSignal_folds[basename.split('-')[0]].append(audioSignal)
             classLabel_folds[basename.split('-')[0]].append(class_label)
 
-    for fold in range(5):   #iterate in folds
-        spectrograms_openL3 = audio_feat(audioSignal_folds[str(fold + 1)], 48000, is_openl3=is_openl3)
-        for x, sample in enumerate(spectrograms_openL3):
-            with open(os.path.join(output_dir, 'fold{}'.format(fold + 1), '{}.pkl'.format(x)), 'wb') as f:
-                pickle.dump((sample, classLabel_folds[str(fold + 1)][x]), f)
+    if(is_openl3):
+        for fold in range(5):   #iterate in folds
+            spectrograms_openL3 = audio_feat(audioSignal_folds[str(fold + 1)], 48000, is_openl3=is_openl3)
+            for x, sample in enumerate(spectrograms_openL3):
+                with open(os.path.join(output_dir, 'fold{}'.format(fold + 1), '{}.pkl'.format(x)), 'wb') as f:
+                    pickle.dump((sample, classLabel_folds[str(fold + 1)][x]), f)
 
 if __name__ == "__main__":
     args = parse_arguments()
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     if(not args.trained_model == None):
         avcModel = avcNet_generator()
         avcModel.load_state_dict(torch.load(args.trained_model))
-
+        is_openl3 = False
     else:
         avcModel = None
         is_openl3 = True

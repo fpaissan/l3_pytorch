@@ -21,8 +21,8 @@ VIDEO_cmpMult = 1
 VIDEO_channels = np.array([64, 128, 256])*VIDEO_cmpMult
 
 #Merged model parameters
-double_convolution = True 
-AVC_weightdecay = 1e-5
+double_convolution = False
+AVC_weightdecay = 1e-4
 AVC_lr = 1e-4
 AVC_epochs = 150
 # AVC_batchSize = (GPU_Memory - GPU_Offset) * 1e9 / (VIDEO_C * VIDEO_H * VIDEO_W + AUDIO_C * AUDIO_H * AUDIO_W * 8)

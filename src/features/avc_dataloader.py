@@ -1,6 +1,7 @@
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from src.features.utils import *
+from skimage.color import rgb2hsv
 import soundfile as sf
 from PIL import Image
 import numpy as np
@@ -15,7 +16,7 @@ def adjust_saturation(rgb_img, factor):
     """
         factor: Multiplicative scaling factor to be applied to saturation
     """
-    hsv_img = skimage.color.rgb2hsv(rgb_img)
+    hsv_img = rgb2hsv(rgb_img)
     imin, imax = skimage.dtype_limits(hsv_img, clip_negative = False)
     hsv_img[:,:,1] = np.clip(hsv_img[:,:,1] * factor, imin, imax)
     return skimage.color.hsv2rgb(hsv_img)
@@ -55,7 +56,7 @@ def saturation_and_brightness(frame_data):
 class VGGSound_Dataset(Dataset):
     """VGGSound dataset."""
 
-    def __init__(self, data_dir, transform = False):
+    def __init__(self, data_dir, transform = True):
         self.file_list = glob.glob(data_dir)
         self.transform_compose = transforms.Compose([
             transforms.RandomResizedCrop(224),

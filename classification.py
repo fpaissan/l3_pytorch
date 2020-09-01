@@ -100,8 +100,8 @@ if __name__ == "__main__":
                best_loss = val_loss
                torch.save(classModel.state_dict(), os.path.join(args.ckp_dir, 'CLASSIFICATION_best_val_{}.ckp'.format(fold)))
 
-            writer.add_scalar('Loss_{}/test_{}'.format(fold, id_log), sum(loss)/len(loss), e)
-            writer.add_scalar('Acc_{}/test_{}'.format(fold, id_log), sum(acc)/len(acc), e)
+            writer.add_scalar('Loss_{}/val_{}'.format(fold, id_log), sum(loss)/len(loss), e)
+            writer.add_scalar('Acc_{}/val_{}'.format(fold, id_log), sum(acc)/len(acc), e)
 
         for batch in tqdm(test_dataloader):
             embedding, label = batch

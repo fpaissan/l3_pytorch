@@ -21,14 +21,9 @@ import gzip
 import time
 import os
 
+# CUDA_VISIBLE_DEVICES=0 python3.6 avc.py --data-dir /scratch/gcerutti/VGGsound/data/processed/
+
 torch.set_default_tensor_type(torch.FloatTensor)
-
-#Net debugging
-# X = []
-# X.append(torch.tensor(np.ones(shape=(par.AVC_batchSize, par.AUDIO_C, par.AUDIO_H, par.AUDIO_W))))
-# X.append(torch.tensor(np.ones(shape=(par.AVC_batchSize, par.VIDEO_C, par.VIDEO_H, par.VIDEO_W))))
-
-# model_trainer.train(X, None)
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Moves data from a single folder to train test folder')
@@ -71,7 +66,7 @@ if __name__ == "__main__":
   
   model.optimizer = optim.Adam(model.parameters(), lr=p.AVC_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=p.AVC_weightdecay, amsgrad=False)
   model.criterion = F.nll_loss
-  model.scheduler = optim.lr_scheduler.StepLR(model.optimizer, 16, gamma=0.94)
+  # model.scheduler = optim.lr_scheduler.StepLR(model.optimizer, 16, gamma=0.94)
 
   # initialize summary writer
   os.system("rm -rd {}".format(args.log_dir))
@@ -102,7 +97,7 @@ if __name__ == "__main__":
       loss.append(loss_batch)
       acc.append(acc_batch)
 
-    model.scheduler.step()    
+    # model.scheduler.step()    
     test_loss = sum(loss)/len(loss)
     if test_loss < best_loss:
       print("INFO: saving checkpoint!")
