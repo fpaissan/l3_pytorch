@@ -1,10 +1,5 @@
-Commands for running on virgo:
+Code for Look, Listen and Learn (Arandjelović, R., Zisserman, A. 2017) ported to pytorch and based on the (tensorflow implementation)[https://github.com/marl/l3embedding].
 
-# Step 1: train/test split
-In the folder src/data/ run
+Please note the code is not developed from the paper's authors, therefore this is a custom implementation of the work.
 
-pyl3 train_test_split.py --data-dir /nfssys/shine0/data/VGGSound/data/vggsound --output-dir /nfssys/shine0/data/VGGSound/interim --csv /nfssys/shine0/data/VGGSound/audioset_ds/VGGSound/vggsound.csv
-
-# Step 2: data pre-processinig
-
-pyl3 batch_extraction.py --data-dir /nfssys/shine0/data/VGGSound/interim --output-dir /nfssys/shine0/data/VGGSound/processed 
+Feel free to contribute and reach out for feedback.
